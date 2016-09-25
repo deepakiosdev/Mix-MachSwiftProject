@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gkb-ZD-qB1">
+                                <connections>
+                                    <segue destination="6lV-pn-cSn" kind="embed" identifier="PlayerViewController" id="zSk-WV-jD7"/>
+                                </connections>
+                            </containerView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xDX-zA-YKg">
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jaS-39-oU8">
+                                        <frame key="frameInset" minX="24" minY="19" width="54" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Play"/>
+                                        <state key="selected" title="Pause"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gjx-OS-kdi">
+                                        <frame key="frameInset" minX="95" minY="19" width="32" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Next"/>
+                                        <connections>
+                                            <action selector="next:" destination="BYZ-38-t0r" eventType="touchUpInside" id="7V2-wQ-6fd"/>
+                                            <action selector="pause:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hCu-fZ-ZTZ"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sZp-E3-4Xu">
+                                        <frame key="frameInset" minX="153" minY="19" width="49" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Repeat"/>
+                                        <connections>
+                                            <action selector="repeat:" destination="BYZ-38-t0r" eventType="touchUpInside" id="D80-bz-cy0"/>
+                                        </connections>
+                                    </button>
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mLv-7h-dip">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="44" id="eks-b7-p5P"/>
+                                        </constraints>
+                                        <items>
+                                            <barButtonItem style="plain" id="xPl-tA-F1l">
+                                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Wyh-Yh-CUs">
+                                                    <rect key="frame" x="16" y="7" width="44" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" title="Play"/>
+                                                    <state key="selected" title="Pause"/>
+                                                    <connections>
+                                                        <action selector="playPause:" destination="BYZ-38-t0r" eventType="touchUpInside" id="BoW-IQ-yex"/>
+                                                    </connections>
+                                                </button>
+                                            </barButtonItem>
+                                            <barButtonItem title="Item" style="plain" id="MXm-RO-85W">
+                                                <slider key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="BeF-be-MZ1">
+                                                    <rect key="frame" x="70" y="7" width="285" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <connections>
+                                                        <action selector="seekBarValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="1Yy-Bn-n9z"/>
+                                                    </connections>
+                                                </slider>
+                                            </barButtonItem>
+                                            <barButtonItem style="plain" id="NQ4-Y8-Ph5">
+                                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="oMR-Ds-53c">
+                                                    <rect key="frame" x="365" y="7" width="37" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal">
+                                                        <color key="titleColor" red="1" green="0.23423837550000001" blue="0.91737058989999998" alpha="1" colorSpace="calibratedRGB"/>
+                                                    </state>
+                                                </button>
+                                            </barButtonItem>
+                                            <barButtonItem style="plain" id="m3U-1N-0Hm">
+                                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ETx-EO-spu">
+                                                    <rect key="frame" x="412" y="7" width="46" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <state key="selected" title="Pause"/>
+                                                </button>
+                                            </barButtonItem>
+                                        </items>
+                                    </toolbar>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.78228438909999998" blue="0.099510303549999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="mLv-7h-dip" secondAttribute="trailing" constant="3" id="1Sl-g7-AoL"/>
+                                    <constraint firstItem="mLv-7h-dip" firstAttribute="top" secondItem="xDX-zA-YKg" secondAttribute="top" id="6po-Dm-D92"/>
+                                    <constraint firstItem="mLv-7h-dip" firstAttribute="leading" secondItem="xDX-zA-YKg" secondAttribute="leading" id="ZFp-7P-kJO"/>
+                                    <constraint firstAttribute="bottom" secondItem="mLv-7h-dip" secondAttribute="bottom" constant="72" id="k54-oD-vwV"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="xDX-zA-YKg" firstAttribute="top" secondItem="gkb-ZD-qB1" secondAttribute="bottom" id="5G2-kg-efs"/>
+                            <constraint firstAttribute="trailing" secondItem="gkb-ZD-qB1" secondAttribute="trailing" id="7AR-8d-zBH"/>
+                            <constraint firstAttribute="trailing" secondItem="xDX-zA-YKg" secondAttribute="trailing" id="7be-2W-IcQ"/>
+                            <constraint firstItem="gkb-ZD-qB1" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Hqy-Pb-5f0"/>
+                            <constraint firstAttribute="bottom" secondItem="gkb-ZD-qB1" secondAttribute="bottom" constant="116" id="LH0-pW-uOU"/>
+                            <constraint firstItem="gkb-ZD-qB1" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="SSd-Kz-3gO"/>
+                            <constraint firstItem="xDX-zA-YKg" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="VNl-eb-zbX"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="xDX-zA-YKg" secondAttribute="bottom" id="Ycj-O3-9iV"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="containerView" destination="gkb-ZD-qB1" id="rYb-oU-aXb"/>
+                        <outlet property="playPauseButton" destination="Wyh-Yh-CUs" id="HED-JT-JOk"/>
+                        <outlet property="seekBar" destination="BeF-be-MZ1" id="UfS-wo-wib"/>
+                        <outlet property="toolBar" destination="mLv-7h-dip" id="eUQ-qD-Zj9"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2.3999999999999999" y="61.619190404797607"/>
+        </scene>
+        <!--AV Player View Controller-->
+        <scene sceneID="qE2-Og-ZK6">
+            <objects>
+                <avPlayerViewController storyboardIdentifier="PlayerViewController" videoGravity="AVLayerVideoGravityResizeAspect" id="6lV-pn-cSn" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Bv8-We-Sl5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="790" y="49"/>
+        </scene>
+    </scenes>
+</document>

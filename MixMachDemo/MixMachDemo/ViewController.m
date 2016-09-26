@@ -71,14 +71,20 @@
 }
 
 - (void)playerReadyToPlay {
-    self.seekBar.maximumValue = _playerVC.duration;
-    _playPauseButton.enabled = YES;
+    self.seekBar.maximumValue   = _playerVC.duration;
+    _playPauseButton.enabled    = YES;
 
 }
 
 - (void)playerFrameRateChangedWithFrameRate:(double)frameRate {
-    //_playPauseButton.selected = frameRate;
-   // [_playerVC playPause];
+    
+    if (frameRate == 0.0) {
+        _playPauseButton.selected = NO;
+    } else {
+        _playPauseButton.selected = YES;
+
+    }
+
 }
 
 
@@ -90,8 +96,8 @@
 }
 
 - (IBAction)playPause:(UIButton *)sender {
-    sender.selected = !sender.selected;
     [_playerVC playPause];
+    //sender.selected = !sender.selected;
 }
 
 - (IBAction)next:(id)sender {

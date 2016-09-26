@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
@@ -54,11 +54,11 @@
                                         </constraints>
                                         <items>
                                             <barButtonItem style="plain" id="xPl-tA-F1l">
-                                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Wyh-Yh-CUs">
-                                                    <rect key="frame" x="16" y="7" width="44" height="30"/>
+                                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wyh-Yh-CUs">
+                                                    <rect key="frame" x="16" y="11" width="55" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <state key="normal" title="Play"/>
-                                                    <state key="selected" title="Pause"/>
+                                                    <state key="normal" title="Play" image="PlayButton"/>
+                                                    <state key="selected" image="PauseButton"/>
                                                     <connections>
                                                         <action selector="playPause:" destination="BYZ-38-t0r" eventType="touchUpInside" id="BoW-IQ-yex"/>
                                                     </connections>
@@ -66,7 +66,7 @@
                                             </barButtonItem>
                                             <barButtonItem title="Item" style="plain" id="MXm-RO-85W">
                                                 <slider key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="BeF-be-MZ1">
-                                                    <rect key="frame" x="70" y="7" width="285" height="31"/>
+                                                    <rect key="frame" x="81" y="6.5" width="285" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <connections>
                                                         <action selector="seekBarValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="1Yy-Bn-n9z"/>
@@ -75,7 +75,7 @@
                                             </barButtonItem>
                                             <barButtonItem style="plain" id="NQ4-Y8-Ph5">
                                                 <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="oMR-Ds-53c">
-                                                    <rect key="frame" x="365" y="7" width="37" height="30"/>
+                                                    <rect key="frame" x="376" y="7" width="37" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal">
                                                         <color key="titleColor" red="1" green="0.23423837550000001" blue="0.91737058989999998" alpha="1" colorSpace="calibratedRGB"/>
@@ -84,7 +84,7 @@
                                             </barButtonItem>
                                             <barButtonItem style="plain" id="m3U-1N-0Hm">
                                                 <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ETx-EO-spu">
-                                                    <rect key="frame" x="412" y="7" width="46" height="30"/>
+                                                    <rect key="frame" x="423" y="7" width="46" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <state key="selected" title="Pause"/>
@@ -142,4 +142,8 @@
             <point key="canvasLocation" x="790" y="49"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="PauseButton" width="18" height="22"/>
+        <image name="PlayButton" width="21" height="22"/>
+    </resources>
 </document>

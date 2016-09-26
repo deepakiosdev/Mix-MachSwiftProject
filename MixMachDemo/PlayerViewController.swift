@@ -26,7 +26,7 @@ private var playerViewControllerKVOContext  = 0
     func playerFrameRateChanged(frameRate:Double)
 }
 
-@objc public class PlayerViewController: NSObject {
+@objc public class PlayerViewController: NSObject, AVAssetResourceLoaderDelegate {
     
     
     //****************************************************
@@ -42,6 +42,35 @@ private var playerViewControllerKVOContext  = 0
     var mediaPlayer: AVPlayerViewController = AVPlayerViewController()
     var timeObserverToken: AnyObject?
     var delegate:PlayerViewControllerDelegate! = nil
+    
+    var queuePlayer = AVQueuePlayer()
+
+    var urlAsset: AVURLAsset? {
+        didSet {
+            guard let newAsset = urlAsset else { return }
+            asynchronouslyLoadURLAsset(newAsset)
+        }
+    }
+    
+    private var playerItem: AVPlayerItem? = nil {
+        didSet {
+            /*
+             If needed, configure player item here before associating it with a player.
+             (example: adding outputs, setting text style rules, selecting media options)
+             */
+            if (playerItem == nil) {
+                removeObservers()
+            } else {
+                if (queuePlayer.canInsert(self.playerItem!, after: nil)) {
+                    queuePlayer.insert(self.playerItem!, after: nil)
+                }
+                mediaPlayer.player?.replaceCurrentItem(with: self.playerItem)
+                
+                prepareToPlay()
+            }
+
+        }
+    }
     
     var currentTime: Double {
         get {
@@ -138,24 +167,79 @@ private var playerViewControllerKVOContext  = 0
     
      func removeObservers() {
         
-        mediaPlayer.player?.currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.duration), context: &playerViewControllerKVOContext)
-        mediaPlayer.player?.currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerViewControllerKVOContext)
-        mediaPlayer.player?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.rate), context: &playerViewControllerKVOContext)
-
+        if (mediaPlayer.player?.currentItem) != nil {
+            mediaPlayer.player?.currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.duration), context: &playerViewControllerKVOContext)
+            mediaPlayer.player?.currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerViewControllerKVOContext)
+            mediaPlayer.player?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.rate), context: &playerViewControllerKVOContext)
+        }
     }
     
     func prepareToPlay() {
-        
         addObservers()
         setupPlayerPeriodicTimeObserver()
-        mediaPlayer.showsPlaybackControls = false
     }
 
     
     // MARK: - Error Handling
     
-    func handleError(_ error: NSError?) {
-        print("error:\(error)")
+    func handleErrorWithMessage(_ message: String?, error: Error? = nil) {
+        NSLog("Error occured with message: \(message), error: \(error).")
+    }
+    
+    func asynchronouslyLoadURLAsset(_ newAsset: AVURLAsset) {
+        /*
+         Using AVAsset now runs the risk of blocking the current thread (the
+         main UI thread) whilst I/O happens to populate the properties. It's
+         prudent to defer our work until the properties we need have been loaded.
+         */
+        newAsset.loadValuesAsynchronously(forKeys: assetKeysRequiredToPlay) {
+            /*
+             The asset invokes its completion handler on an arbitrary queue.
+             To avoid multiple threads using our internal state at the same time
+             we'll elect to use the main thread at all times, let's dispatch
+             our handler to the main queue.
+             */
+            DispatchQueue.main.sync {
+                /*
+                 `self.asset` has already changed! No point continuing because
+                 another `newAsset` will come along in a moment.
+                 */
+                guard newAsset == self.urlAsset else { return }
+                
+                /*
+                 Test whether the values of each of the keys we need have been
+                 successfully loaded.
+                 */
+                for key in self.assetKeysRequiredToPlay {
+                    var error: NSError?
+                    
+                    if newAsset.statusOfValue(forKey: key, error: &error) == .failed {
+                        let stringFormat = NSLocalizedString("error.asset_key_%@_failed.description", comment: "Can't use this AVAsset because one of it's keys failed to load")
+                        
+                        let message = String.localizedStringWithFormat(stringFormat, key)
+                        
+                        self.handleErrorWithMessage(message, error: error)
+                        
+                        return
+                    }
+                }
+                
+                // We can't play this asset.
+                if !newAsset.isPlayable || newAsset.hasProtectedContent {
+                    let message = NSLocalizedString("error.asset_not_playable.description", comment: "Can't use this AVAsset because it isn't playable or has protected content")
+                    
+                    self.handleErrorWithMessage(message)
+                    
+                    return
+                }
+                
+                /*
+                 We can play this asset. Create a new `AVPlayerItem` and make
+                 it our player's current item.
+                 */
+                self.playerItem = AVPlayerItem(asset: newAsset)
+            }
+        }
     }
     
     //****************************************************
@@ -163,26 +247,86 @@ private var playerViewControllerKVOContext  = 0
     //****************************************************
     
     
-    public func initWithUrl(url: String) {
-    //let url = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
-       let url     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
-      //let url     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
-      // let url     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-        
-        
-        // Create asset to be played
-        let asset = AVAsset(url: URL.init(string: url)!)
+    public func initPlayer(urlString: String) {
+        mediaPlayer.showsPlaybackControls = false
 
-        // Create a new AVPlayerItem with the asset and an
-        // array of asset keys to be automatically loaded
-        let playerItem = AVPlayerItem(asset: asset,
-                                  automaticallyLoadedAssetKeys:assetKeysRequiredToPlay)
         
+        ///////////Demo Urls//////////////////////////////////////
+        //let urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
+        //let urlString = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
+        let localURL = false
+    
+        
+        // MARK: - m3u8 urls
+        // let urlString = Bundle.main.path(forResource: "bipbopall", ofType: "m3u8")!
+        
+        // let urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
+       var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
+        // let urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+        
+        //  let urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
+        //let urlString = "https://devimages.apple.com.edgekey.net/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8" //(Reverse playback)
+        //let urlString = "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8" //(4K)
+        //let urlString = "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch3/appleman.m3u8" //((LIVE TV)
+        
+        // MARK: - App urls
+       //var urlString = "http://nmstream2.clearhub.tv/nmdcMaa/20130713/others/30880d62-2c5b-4487-8ff1-5794d086bea7.mp4"
+        
+        
+        //////////////////////////////////////////
+        
+        
+        
+        var urlStr = urlString as NSString
+        
+        if urlStr.range(of:".m3u8").location == NSNotFound {
+            urlStr = urlString.replacingOccurrences(of:"http", with:"playlist") as NSString
+        }
+        urlString = urlStr as String
+        print("Streming URL:",urlString)
+        
+        var url = URL.init(string: urlString)!
+        if (localURL) {
+            url =  URL(fileURLWithPath: urlString)
+        }
+        
+        //First way and working
+        // Create asset to be played
+       /* let asset = AVAsset(url: url)
+        
+        // Create a new AVPlayerItem with the asset and an array of asset keys to be automatically loaded
+        let playerItem = AVPlayerItem(asset: asset,
+                                      automaticallyLoadedAssetKeys:assetKeysRequiredToPlay)
         
         // Associate the player item with the player
         mediaPlayer.player = AVPlayer(playerItem: playerItem)
-       // mediaPlayer.player = AVPlayer(url: URL(fileURLWithPath: url))
-        prepareToPlay()
+        prepareToPlay()*/
+        
+        //Second way
+        let headers : [String: String] = ["User-Agent": "iPad"]
+        
+        /*let urlAsset        = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
+        let resourceLoader  = urlAsset.resourceLoader
+        resourceLoader.setDelegate(self, queue:DispatchQueue.main)
+        
+        let playerItem      = AVPlayerItem(asset: urlAsset)
+        // Associate the player item with the player
+       // mediaPlayer.player = AVPlayer(playerItem: playerItem)
+        mediaPlayer.player  =  AVQueuePlayer(playerItem: playerItem)
+        self.prepareToPlay()*/
+
+        
+        // 3rd way
+        urlAsset            = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
+        let resourceLoader  = urlAsset?.resourceLoader
+        resourceLoader?.setDelegate(self, queue:DispatchQueue.main)
+        
+        // Associate the player item with the player
+        queuePlayer = AVQueuePlayer(playerItem: playerItem)
+
+        mediaPlayer.player  = queuePlayer
+
+        //self.prepareToPlay()
 
     }
    
@@ -191,6 +335,7 @@ private var playerViewControllerKVOContext  = 0
                                change: [NSKeyValueChangeKey : Any]?,
                                context: UnsafeMutableRawPointer?) {
         print("keyPath:\(keyPath), change:\(change)")
+        
         // Only handle observations for the playerViewControllerKVOContext
         guard context == &playerViewControllerKVOContext else {
             super.observeValue(forKeyPath: keyPath,
@@ -210,7 +355,8 @@ private var playerViewControllerKVOContext  = 0
             }
             
             if newStatus == .failed {
-                handleError(mediaPlayer.player?.currentItem?.error as NSError?)
+                self.handleErrorWithMessage(mediaPlayer.player?.currentItem?.error?.localizedDescription)
+
             }
             else if newStatus == .readyToPlay {
                 
@@ -223,44 +369,31 @@ private var playerViewControllerKVOContext  = 0
                     for key in assetKeysRequiredToPlay {
                         var error: NSError?
                         if asset.statusOfValue(forKey: key, error: &error) == .failed {
-                            self.handleError(error!)
+                            self.handleErrorWithMessage(mediaPlayer.player?.currentItem?.error?.localizedDescription)
                             return
                         }
                     }
                     
                     if !asset.isPlayable || asset.hasProtectedContent {
                         // We can't play this asset.
-                        handleError(nil)
+                        self.handleErrorWithMessage(mediaPlayer.player?.currentItem?.error?.localizedDescription)
                         return
                     }
                     
                     /*
                      The player item is ready to play,
-                     setup picture in picture.
                      */
                     self.delegate!.playerReadyToPlay()
+                    print("canPlayReverse:\(mediaPlayer.player?.currentItem?.canPlayReverse)")
 
                 }
             }
         } else if keyPath == #keyPath(AVPlayerItem.duration) {
-           
-            /*let newDuration: CMTime
-            if let newDurationAsValue = change?[NSKeyValueChangeKey.newKey] as? NSValue {
-                newDuration = newDurationAsValue.timeValue
-            }
-            else {
-                newDuration = kCMTimeZero
-            }
-            let hasValidDuration = newDuration.isNumeric && newDuration.value != 0
-            let newDurationSeconds = hasValidDuration ? CMTimeGetSeconds(newDuration) : 0.0
-            */
-            //self.delegate!.playerReadyToPlay()
-
+ 
         }
         else if keyPath == #keyPath(AVPlayer.rate){
             // Update playPauseButton type.
             let newRate = (change?[NSKeyValueChangeKey.newKey] as! NSNumber).doubleValue
-            
             self.delegate!.playerFrameRateChanged(frameRate: newRate)
         }
     }
@@ -287,4 +420,36 @@ private var playerViewControllerKVOContext  = 0
     public func pause() {
         mediaPlayer.player?.pause()
     }
+    
+    public func reversePlayback() {
+        
+        if let reversePlay = mediaPlayer.player!.currentItem?.canPlayReverse  {
+        //mediaPlayer.player!.seek(to: mediaPlayer.player!.currentItem!.asset.duration)
+        print("reversePlay = \(reversePlay)")
+        mediaPlayer.player!.rate = -1.0
+        }
+    }
+    
+    
+    //****************************************************
+    // MARK: - AVAssetResourceLoaderDelegate methods
+    //****************************************************
+ 
+    // FPS Key Fetch for Persistent Keys
+    public func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource
+        loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
+        print("shouldWaitForLoadingOfRequestedResource called...")
+
+       /* if loadingRequest.request.url?.scheme == "skd" {
+            let persistentContentKeyContext = Data(contentsOf: keySaveLocation)!
+            loadingRequest.contentInformationRequest!.contentType = AVStreamingKeyDeliveryPersistentContentKeyType
+            
+            loadingRequest.dataRequest!.respond(with: persistentContentKeyContext)
+            loadingRequest.finishLoading()
+            return true
+        }
+        return false*/
+        return true
+    }
+ 
 }

@@ -56,7 +56,7 @@
         _playerVC.delegate      = self;
         _playerVC.mediaPlayer   = playerVC;
         NSString *url           = @"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
-        [_playerVC initWithUrlWithUrl:url];
+        [_playerVC initPlayerWithUrlString:url];
 
     }
 
@@ -98,6 +98,10 @@
 }
 
 - (IBAction)repeat:(id)sender {
+}
+
+- (IBAction)revsersePlayback:(id)sender {
+    [_playerVC reversePlayback];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -39,12 +39,25 @@ private var playerViewControllerKVOContext  = 0
         "hasProtectedContent"
     ]
     
-    var mediaPlayer: AVPlayerViewController = AVPlayerViewController()
+    
     var timeObserverToken: Any?
     
     var delegate:PlayerViewControllerDelegate! = nil
+    
+    var mediaPlayer: AVPlayerViewController = AVPlayerViewController () {
+            didSet {
+                mediaPlayer.showsPlaybackControls   = false
+        }
+    }
 
-    var queuePlayer: AVQueuePlayer?
+
+    var queuePlayer: AVQueuePlayer? {
+        didSet {
+            if let player = queuePlayer {
+                mediaPlayer.player = player
+            }
+        }
+    }
 
     var urlAsset: AVURLAsset? {
         didSet {
@@ -56,7 +69,7 @@ private var playerViewControllerKVOContext  = 0
     private var playerItem: AVPlayerItem? = nil {
         willSet {
             if playerItem == nil {
-                removeObservers()
+                //removeObservers()
             }
         }
         didSet {
@@ -64,7 +77,7 @@ private var playerViewControllerKVOContext  = 0
              If needed, configure player item here before associating it with a player.
              (example: adding outputs, setting text style rules, selecting media options)
              */
-            if playerItem != nil {
+            if playerItem != nil && queuePlayer != nil {
                 
                 if (queuePlayer?.canInsert(self.playerItem!, after: nil))! {
                     queuePlayer?.insert(self.playerItem!, after: nil)
@@ -72,28 +85,47 @@ private var playerViewControllerKVOContext  = 0
                     // let playerItem      = AVPlayerItem(asset: urlAsset!)
                     
                     //queuePlayer         = AVQueuePlayer(playerItem: playerItem)
-                    mediaPlayer.player  = queuePlayer
+                   // queuePlayer  = queuePlayer
                     
                 }
-                // mediaPlayer.player?.replaceCurrentItem(with: self.playerItem)
+                // queuePlayer?.replaceCurrentItem(with: self.playerItem)
                 prepareToPlay()
             }
         }
     }
     
+    var isPlaying : Bool {
+        get {
+            if (queuePlayer?.rate != 0 && queuePlayer?.error == nil) {
+                return true
+            }
+            return false
+        }
+    }
+    
+   /* var rate: Float {
+        get {
+            return (queuePlayer?.rate)!
+        }
+        
+        set {
+            queuePlayer?.rate = newValue
+        }
+    }*/
+    
     var currentTime: Double {
         get {
-            return CMTimeGetSeconds(mediaPlayer.player!.currentTime())
+            return CMTimeGetSeconds(queuePlayer!.currentTime())
         }
         
         set {
             let newTime = CMTimeMakeWithSeconds(newValue, 1)
-            mediaPlayer.player?.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+            queuePlayer?.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
         }
     }
     
     var duration: Double {
-        guard let currentItem = mediaPlayer.player?.currentItem else { return 0.0 }
+        guard let currentItem = queuePlayer?.currentItem else { return 0.0 }
         
         return CMTimeGetSeconds(currentItem.duration)
     }
@@ -102,7 +134,7 @@ private var playerViewControllerKVOContext  = 0
     // MARK: - Life Cycle Methods
     //****************************************************
     override init() {
-        
+
     }
     
     deinit {
@@ -125,7 +157,7 @@ private var playerViewControllerKVOContext  = 0
        
         // Make sure we don't have a strong reference cycle by only capturing self as weak.
         let interval        = CMTimeMake(1, 1)
-        timeObserverToken   = mediaPlayer.player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [unowned self] time in
+        timeObserverToken   = queuePlayer?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [unowned self] time in
             let timeElapsed  = Float(CMTimeGetSeconds(time))
             
             self.delegate!.playerTimeUpdate(time:Double(timeElapsed))
@@ -134,56 +166,64 @@ private var playerViewControllerKVOContext  = 0
     
     private func cleanUpPlayerPeriodicTimeObserver() {
         if let timeObserverToken = timeObserverToken {
-            mediaPlayer.player?.removeTimeObserver(timeObserverToken)
+            queuePlayer?.removeTimeObserver(timeObserverToken)
             self.timeObserverToken = nil
         }
     }
     
     func addObservers() {
         // Register as an observer of the player item's status property
-        playerItem?.addObserver(self,
-                               forKeyPath: #keyPath(AVPlayerItem.status),
-                               options: [.old, .new],
-                               context: &playerViewControllerKVOContext)
-        
-        
-        playerItem?.addObserver(self,
-                                                     forKeyPath: #keyPath(AVPlayerItem.duration),
-                                                     options: [.old, .new],
-                                                     context: &playerViewControllerKVOContext)
-
-        mediaPlayer.player?.addObserver(self,
-                                                     forKeyPath: #keyPath(AVPlayer.rate),
-                                                     options: [.old, .new],
-                                                     context: &playerViewControllerKVOContext)
-        
-        mediaPlayer.player?.addObserver(self,
-                                        forKeyPath: #keyPath(AVPlayer.currentItem),
-                                        options: [.old, .new],
-                                        context: &playerViewControllerKVOContext)
-    }
-    
-     func removeObservers() {
-        
         if (playerItem != nil) {
-            playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.duration), context: &playerViewControllerKVOContext)
-            playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerViewControllerKVOContext)
-            mediaPlayer.player?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.rate), context: &playerViewControllerKVOContext)
-            mediaPlayer.player?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.currentItem), context: &playerViewControllerKVOContext)
+            playerItem?.addObserver(self,
+                                    forKeyPath: #keyPath(AVPlayerItem.status),
+                                    options: [.old, .new],
+                                    context: &playerViewControllerKVOContext)
+            
+            
+            playerItem?.addObserver(self,
+                                    forKeyPath: #keyPath(AVPlayerItem.duration),
+                                    options: [.old, .new],
+                                    context: &playerViewControllerKVOContext)
+        }
 
-            cleanUpPlayerPeriodicTimeObserver()
+        if (queuePlayer != nil) {
+            queuePlayer?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayer.rate),
+                                     options: [.old, .new],
+                                     context: &playerViewControllerKVOContext)
+            
+            queuePlayer?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayer.currentItem),
+                                     options: [.old, .new],
+                                     context: &playerViewControllerKVOContext)
         }
     }
     
-    func prepareToPlay() {
-   // NotificationCenter.default.addObserver(self, selector: Selector(("playerDidFinishPlaying:")), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
+     func removeObservers() {
+        if (playerItem != nil) {
+            playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.duration), context: &playerViewControllerKVOContext)
+            playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerViewControllerKVOContext)
+        }
         
+        if (queuePlayer != nil) {
+            queuePlayer?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.rate), context: &playerViewControllerKVOContext)
+            queuePlayer?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.currentItem), context: &playerViewControllerKVOContext)
+        }
+        cleanUpPlayerPeriodicTimeObserver()
+
+    }
+    
+    func prepareToPlay() {
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
         addObservers()
         setupPlayerPeriodicTimeObserver()
     }
 
     func cleanUp() {
         pause()
+        removeObservers()
+        NotificationCenter.default.removeObserver(self)
         queuePlayer?.removeAllItems()
         playerItem  = nil
         urlAsset    = nil
@@ -191,12 +231,13 @@ private var playerViewControllerKVOContext  = 0
     }
     
     func playerDidFinishPlaying(note: NSNotification) {
-        if (queuePlayer?.items().isEmpty)! {
+        if (queuePlayer?.items().isEmpty)! == false && (duration != 0.0) {
             print("Play queue emptied out due to bad player item. End looping")
-            removeObservers()
-            cleanUp()
-            initPlayer(urlString: "")
             self.delegate!.playerFrameRateChanged(frameRate: 0)
+            self.delegate!.playerTimeUpdate(time:Double(0.0))
+            cleanUp()
+            currentTime = 0.0
+            initPlayer(urlString: "")
         }
     }
     
@@ -258,6 +299,7 @@ private var playerViewControllerKVOContext  = 0
                  it our player's current item.
                  */
                 self.playerItem = AVPlayerItem(asset: newAsset)
+                self.playerItem?.seek(to: kCMTimeZero)
             }
         }
     }
@@ -268,27 +310,24 @@ private var playerViewControllerKVOContext  = 0
     
     
     public func initPlayer(urlString: String) {
-        mediaPlayer.showsPlaybackControls = false
-
         
         ///////////Demo Urls//////////////////////////////////////
         //let urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
-        var urlString   = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
-        let localURL    = true
+       // var urlString   = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
+        let localURL    = false
     
-        
         // MARK: - m3u8 urls
         // let urlString = Bundle.main.path(forResource: "bipbopall", ofType: "m3u8")!
         
-        // let urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
-      // var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
-        // let urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+        //var urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
+        var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
+        //var urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
         
-        //  let urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
+        //var urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
         //let urlString = "https://devimages.apple.com.edgekey.net/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8" //(Reverse playback)
         //let urlString = "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8" //(4K)
         //let urlString = "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch3/appleman.m3u8" //((LIVE TV)
-        
+        //var urlString  = "http://cdn-fms.rbs.com.br/vod/hls_sample1_manifest.m3u8"
         // MARK: - App urls
        //var urlString = "http://nmstream2.clearhub.tv/nmdcMaa/20130713/others/30880d62-2c5b-4487-8ff1-5794d086bea7.mp4"
         
@@ -319,7 +358,7 @@ private var playerViewControllerKVOContext  = 0
                                       automaticallyLoadedAssetKeys:assetKeysRequiredToPlay)
         
         // Associate the player item with the player
-        mediaPlayer.player = AVPlayer(playerItem: playerItem)
+        queuePlayer = AVPlayer(playerItem: playerItem)
         prepareToPlay()*/
         
         let headers : [String: String] = ["User-Agent": "iPad"]
@@ -332,13 +371,14 @@ private var playerViewControllerKVOContext  = 0
         
         let playerItem      = AVPlayerItem(asset: urlAsset)
         // Associate the player item with the player
-        mediaPlayer.player = AVPlayer(playerItem: playerItem)
-        //mediaPlayer.player  =  AVQueuePlayer(playerItem: playerItem)
+        queuePlayer = AVPlayer(playerItem: playerItem)
+        //queuePlayer  =  AVQueuePlayer(playerItem: playerItem)
         self.prepareToPlay()*/
 
         
         // 3rd way
-        queuePlayer         = AVQueuePlayer()
+        queuePlayer          = AVQueuePlayer()
+        //mediaPlayer.player  = queuePlayer
         urlAsset            = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
         let resourceLoader  = urlAsset?.resourceLoader
         resourceLoader?.setDelegate(self, queue:DispatchQueue.main)
@@ -347,9 +387,9 @@ private var playerViewControllerKVOContext  = 0
        // let playerItem      = AVPlayerItem(asset: urlAsset!)
       
         //queuePlayer         = AVQueuePlayer(playerItem: playerItem)
-        //mediaPlayer.player  = queuePlayer
+        //queuePlayer  = queuePlayer
        // let playerItem      = AVPlayerItem(asset: urlAsset!)
-       // mediaPlayer.player  = AVQueuePlayer(playerItem: playerItem)
+       // queuePlayer  = AVQueuePlayer(playerItem: playerItem)
         //self.prepareToPlay()
     }
    
@@ -378,13 +418,13 @@ private var playerViewControllerKVOContext  = 0
             }
             
             if newStatus == .failed {
-                self.handleErrorWithMessage(mediaPlayer.player?.currentItem?.error?.localizedDescription)
+                self.handleErrorWithMessage(queuePlayer?.currentItem?.error?.localizedDescription)
 
             }
             else if newStatus == .readyToPlay {
                 
-                if let asset = mediaPlayer.player?.currentItem?.asset {
-                    
+                if let asset = queuePlayer?.currentItem?.asset {
+
                     /*
                      First test whether the values of `assetKeysRequiredToPlay` we need
                      have been successfully loaded.
@@ -392,14 +432,14 @@ private var playerViewControllerKVOContext  = 0
                     for key in assetKeysRequiredToPlay {
                         var error: NSError?
                         if asset.statusOfValue(forKey: key, error: &error) == .failed {
-                            self.handleErrorWithMessage(mediaPlayer.player?.currentItem?.error?.localizedDescription)
+                            self.handleErrorWithMessage(queuePlayer?.currentItem?.error?.localizedDescription)
                             return
                         }
                     }
                     
                     if !asset.isPlayable || asset.hasProtectedContent {
                         // We can't play this asset.
-                        self.handleErrorWithMessage(mediaPlayer.player?.currentItem?.error?.localizedDescription)
+                        self.handleErrorWithMessage(queuePlayer?.currentItem?.error?.localizedDescription)
                         return
                     }
                     
@@ -407,7 +447,7 @@ private var playerViewControllerKVOContext  = 0
                      The player item is ready to play,
                      */
                     self.delegate!.playerReadyToPlay()
-                    print("canPlayReverse:\(mediaPlayer.player?.currentItem?.canPlayReverse)")
+                    print("canPlayReverse:\(queuePlayer?.currentItem?.canPlayReverse)")
 
                 }
             }
@@ -454,7 +494,7 @@ private var playerViewControllerKVOContext  = 0
                 if let itemRemoved = change?[.oldKey] as? AVPlayerItem {
                     itemRemoved.seek(to: kCMTimeZero)
                     removeObservers()
-                    //cleanUp()
+                    cleanUp()
                     queuePlayer?.insert(itemRemoved, after: nil)
                     addObservers()
                 }
@@ -466,7 +506,7 @@ private var playerViewControllerKVOContext  = 0
     }
 
     public func playPause() {
-        if mediaPlayer.player?.rate != 1.0 {
+        if queuePlayer?.rate != 1.0 {
             // Not playing foward, so play.
             if currentTime == duration {
                 // At end, so got back to beginning.
@@ -481,21 +521,18 @@ private var playerViewControllerKVOContext  = 0
     }
     
     public func play() {
-        mediaPlayer.player?.play()
+        queuePlayer?.play()
     }
     
     public func pause() {
-        mediaPlayer.player?.pause()
+        queuePlayer?.pause()
     }
     
     public func reversePlayback() {
         
-        if let reversePlay = mediaPlayer.player!.currentItem?.canPlayReverse  {
+        if let reversePlay = queuePlayer!.currentItem?.canPlayReverse  {
             print("reversePlay = \(reversePlay)")
-            if (mediaPlayer.player!.rate == 0) {
-                play()
-                mediaPlayer.player!.rate = -1.0
-            }
+            queuePlayer!.rate = -1.0
         }
     }
     

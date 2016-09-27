@@ -24,7 +24,11 @@ private var playerViewControllerKVOContext  = 0
     func playerTimeUpdate(time:Double)
     func playerReadyToPlay()
     func playerFrameRateChanged(frameRate:Float)
+    func buffering()
+    func bufferingFinsihed()
 }
+
+
 
 @objc public class PlayerViewController: NSObject, AVAssetResourceLoaderDelegate {
     
@@ -38,8 +42,9 @@ private var playerViewControllerKVOContext  = 0
         "playable",
         "hasProtectedContent"
     ]
-    
-    
+    var isSeekInProgress = false
+    var chaseTime = kCMTimeZero
+
     var timeObserverToken: Any?
     
     var delegate:PlayerViewControllerDelegate! = nil
@@ -120,9 +125,8 @@ private var playerViewControllerKVOContext  = 0
         get {
             return CMTimeGetSeconds(queuePlayer!.currentTime())
         }
-        
         set {
-            let newTime = CMTimeMakeWithSeconds(newValue, 1)
+            let newTime = CMTimeMakeWithSeconds(newValue, frameRate)
             queuePlayer?.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
         }
     }
@@ -175,11 +179,11 @@ private var playerViewControllerKVOContext  = 0
          guard timeObserverToken == nil else { return }
        
         // Make sure we don't have a strong reference cycle by only capturing self as weak.
-        let interval        = CMTimeMake(1, 1)
+        let interval        = CMTimeMake(1, frameRate)
         timeObserverToken   = queuePlayer?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [unowned self] time in
-            let timeElapsed  = Float(CMTimeGetSeconds(time))
-            
-            self.delegate!.playerTimeUpdate(time:Double(timeElapsed))
+            let timeElapsed  = Double(CMTimeGetSeconds((self.currentItem?.currentTime())!))
+           // print("timeElapsed:\(timeElapsed)")
+            self.delegate!.playerTimeUpdate(time:timeElapsed)
         }
     }
     
@@ -203,6 +207,18 @@ private var playerViewControllerKVOContext  = 0
                                     forKeyPath: #keyPath(AVPlayerItem.duration),
                                     options: [.old, .new],
                                     context: &playerViewControllerKVOContext)
+            currentItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.playbackLikelyToKeepUp),
+                                     options: [.old, .new],
+                                     context: &playerViewControllerKVOContext)
+            currentItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.playbackBufferEmpty),
+                                     options: [.old, .new],
+                                     context: &playerViewControllerKVOContext)
+            currentItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges),
+                                     options: [.old, .new],
+                                     context: &playerViewControllerKVOContext)
         }
 
         if (queuePlayer != nil) {
@@ -215,6 +231,7 @@ private var playerViewControllerKVOContext  = 0
                                      forKeyPath: #keyPath(AVPlayer.currentItem),
                                      options: [.old, .new],
                                      context: &playerViewControllerKVOContext)
+           
         }
     }
     
@@ -222,6 +239,12 @@ private var playerViewControllerKVOContext  = 0
         if (currentItem != nil) {
             currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.duration), context: &playerViewControllerKVOContext)
             currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerViewControllerKVOContext)
+            
+            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.playbackLikelyToKeepUp), context: &playerViewControllerKVOContext)
+
+            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.playbackBufferEmpty), context: &playerViewControllerKVOContext)
+
+            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges), context: &playerViewControllerKVOContext)
         }
         
         if (queuePlayer != nil) {
@@ -360,14 +383,14 @@ private var playerViewControllerKVOContext  = 0
         
         ///////////Demo Urls//////////////////////////////////////
         //let urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
-       // var urlString   = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
-        let localURL    = false
+        var urlString   = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
+        let localURL    = true
     
         // MARK: - m3u8 urls
         // let urlString = Bundle.main.path(forResource: "bipbopall", ofType: "m3u8")!
         
         //var urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
-        var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
+        //var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
         //var urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
         
         //var urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
@@ -396,48 +419,12 @@ private var playerViewControllerKVOContext  = 0
         }
         print("Streming URL:",urlString)
 
-        //First way and working
-        // Create asset to be played
-       /* let asset = AVAsset(url: url)
-        
-        // Create a new AVPlayerItem with the asset and an array of asset keys to be automatically loaded
-        let playerItem = AVPlayerItem(asset: asset,
-                                      automaticallyLoadedAssetKeys:assetKeysRequiredToPlay)
-        
-        // Associate the player item with the player
-        queuePlayer = AVPlayer(playerItem: playerItem)
-        prepareToPlay()*/
-        
         let headers : [String: String] = ["User-Agent": "iPad"]
 
-        //Second way
-        
-       /* let urlAsset        = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
-        let resourceLoader  = urlAsset.resourceLoader
-        resourceLoader.setDelegate(self, queue:DispatchQueue.main)
-        
-        let playerItem      = AVPlayerItem(asset: urlAsset)
-        // Associate the player item with the player
-        queuePlayer = AVPlayer(playerItem: playerItem)
-        //queuePlayer  =  AVQueuePlayer(playerItem: playerItem)
-        self.prepareToPlay()*/
-
-        
-        // 3rd way
-        queuePlayer          = AVQueuePlayer()
-        //mediaPlayer.player  = queuePlayer
-        urlAsset            = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
+        queuePlayer = AVQueuePlayer()
+        urlAsset    = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
         let resourceLoader  = urlAsset?.resourceLoader
         resourceLoader?.setDelegate(self, queue:DispatchQueue.main)
-        
-//        // Associate the player item with the player
-       // let playerItem      = AVPlayerItem(asset: urlAsset!)
-      
-        //queuePlayer         = AVQueuePlayer(playerItem: playerItem)
-        //queuePlayer  = queuePlayer
-       // let playerItem      = AVPlayerItem(asset: urlAsset!)
-       // queuePlayer  = AVQueuePlayer(playerItem: playerItem)
-        //self.prepareToPlay()
     }
    
     override public func observeValue(forKeyPath keyPath: String?,
@@ -505,6 +492,30 @@ private var playerViewControllerKVOContext  = 0
             let newRate = (change?[NSKeyValueChangeKey.newKey] as! NSNumber).floatValue
             self.delegate!.playerFrameRateChanged(frameRate: newRate)
         }
+        else if keyPath == #keyPath(AVPlayerItem.playbackLikelyToKeepUp) {
+            self.delegate!.bufferingFinsihed()
+        }
+        else if keyPath == #keyPath(AVPlayerItem.playbackBufferEmpty) {
+            self.delegate!.buffering()
+        }
+        else if keyPath == #keyPath(AVPlayerItem.loadedTimeRanges) {
+
+            let timeRanges = change?[NSKeyValueChangeKey.newKey] as! [AnyObject]
+ 
+            if (timeRanges.count > 0) {
+                let timerange:CMTimeRange  = timeRanges[0].timeRangeValue
+                
+                
+                let smartValue: CGFloat = CGFloat(CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration)))
+                
+                let duration: CGFloat = CGFloat(CMTimeGetSeconds(self.queuePlayer!.currentTime()))
+                
+                if (smartValue - duration > 5.0 || (smartValue == duration)) {
+                    self.delegate!.bufferingFinsihed()
+                }
+            }
+            
+        }
         else if keyPath == #keyPath(AVPlayer.currentItem) {
             guard let player = queuePlayer else { return }
             
@@ -546,6 +557,7 @@ private var playerViewControllerKVOContext  = 0
                 }
             }
         }
+
         else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
@@ -577,32 +589,40 @@ private var playerViewControllerKVOContext  = 0
     // TODO: For |reversePlayback| and |fastForwardPlayback| put check canPlayFastForward, canPlaySlowForward, canPlayReverse etc... and make a single method
     public func playReverse() {
         // Rewind no faster than -2.0.
-      var playerRate = max((queuePlayer?.rate)! - 0.5, -2.0)
-        if (playerRate >= 0) {
+        var playerRate = max(rate - 0.5, -2.0)
+        if (playerRate == 0) {
           playerRate = -0.5
         }
-        rate = playerRate
+        playFromRate(playerRate: playerRate)
     }
     
-    public func playeForward() {
+    public func playForward() {
         //Fast forward no faster than 2.0.
-        var playerRate = min((queuePlayer?.rate)! + 0.5, 2.0)
-        if (rate <= 0) {
+        var playerRate = min(rate + 0.5, 2.0)
+        if (playerRate == 0) {
             playerRate = 0.5
         }
-        rate = playerRate
-
+        playFromRate(playerRate: playerRate)
     }
+    
+    public func playFromRate(playerRate: Float) {
+        
+        if rate != playerRate {
+            rate = playerRate
+        }
+    }
+
     
     /*
      * |numberOfFrame| +ve value means move forward and -ve backwoard
      */
     public func stepFrames(byCount numberOfFrame:Int) {
-        currentItem?.cancelPendingSeeks()
-        print("canStepForward\(currentItem?.canStepForward)")
-        print("canStepBackward\(currentItem?.canStepBackward)")
-
-        //currentItem?.step(byCount: numberOfFrame)
+        
+        self.pause()
+       // currentItem?.cancelPendingSeeks()
+       // currentItem?.step(byCount: numberOfFrame) //Its working for downloaded assets
+       // return
+        
         let currentTime         = currentItem?.currentTime()
         var currentTimeScale    = CMTimeConvertScale(currentTime!, frameRate, CMTimeRoundingMethod.default)
         
@@ -611,19 +631,24 @@ private var playerViewControllerKVOContext  = 0
         } else {
             currentTimeScale.value -= numberOfFrame
         }
-        
-        queuePlayer?.seek(to: currentTimeScale, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
-            self.pause()
-        })
+        self.currentTime = Double(CMTimeGetSeconds(currentTimeScale))
+
+        /*queuePlayer?.seek(to: currentTimeScale, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
+            //self.pause()
+            let timeElapsed  = Double(CMTimeGetSeconds((self.currentItem?.currentTime())!))
+            print("timeElapsed:\(timeElapsed)")
+            self.delegate!.playerTimeUpdate(time:timeElapsed)
+        })*/
     }
 
     
     public func stepSeconds(byCount numberOfSecond:Int64) {
-        pause()
-        currentItem?.cancelPendingSeeks()
+        self.pause()
+       // currentItem?.cancelPendingSeeks()
+
         let seconds = CMTimeMake(numberOfSecond, frameRate)
-        //queuePlayer?.seek(to: seconds) // Optimized for speed
-        
+
+       // stopPlayingAndSeekSmoothlyToTime(newChaseTime: seconds)
         if let currentTime = queuePlayer?.currentTime() {
             
             var seekTime = kCMTimeZero
@@ -632,28 +657,61 @@ private var playerViewControllerKVOContext  = 0
             } else {
                 seekTime = CMTimeSubtract(currentTime, seconds)
             }
+            self.currentTime = Double(CMTimeGetSeconds(seekTime))
             
-            queuePlayer?.seek(to: seekTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
+           /* queuePlayer?.seek(to: seekTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
                 self.pause()
-            })
+            })*/
         }
-        
     }
     
     
-    
-    public func moveTo(numberOfSecond seconds:Int64) {
-        
-        /*let seconds = CMTimeMake(seconds, 1)
-        player?.seekToTime(fiveSecondsIn) // Optimized for speed
-        player?.seekToTime(fiveSecondsIn, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero) // Optimized for precision
-        
-        if let currentTime = player?.currentTime() {
-            let fiveSecondsAhead = CMTimeAdd(currentTime, fiveSecondsIn)
-            player?.seekToTime(fiveSecondsAhead)
-        }*/
-
+    func stopPlayingAndSeekSmoothlyToTime(newChaseTime:CMTime)
+    {
+        queuePlayer?.pause()
+         if CMTimeCompare(newChaseTime, chaseTime) != 0
+        {
+            chaseTime = newChaseTime;
+            if !isSeekInProgress
+            {
+                trySeekToChaseTime()
+            }
+        }
     }
+    
+    func trySeekToChaseTime()
+    {
+        if currentItem?.status == .unknown
+        {
+            // wait until item becomes ready (KVO player.currentItem.status)
+        }
+        else if currentItem?.status == .readyToPlay
+        {
+            actuallySeekToTime()
+        }
+    }
+    
+    func actuallySeekToTime()
+    {
+        isSeekInProgress = true
+        let seekTimeInProgress = chaseTime
+        queuePlayer?.seek(to: seekTimeInProgress, toleranceBefore: kCMTimeZero,
+                          
+                          toleranceAfter: kCMTimeZero, completionHandler:
+            
+            { (isFinished:Bool) -> Void in
+                if CMTimeCompare(seekTimeInProgress, self.chaseTime) == 0
+                {
+                    self.isSeekInProgress = false
+                }
+                else
+                {
+                    self.trySeekToChaseTime()
+                    self.chaseTime = kCMTimeZero
+                }
+        })
+    }
+    
     // MARK: - Time utility methods
 
     public func getTimeString(time: Float) -> String {

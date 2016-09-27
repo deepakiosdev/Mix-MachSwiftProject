@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
@@ -15,7 +15,7 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gkb-ZD-qB1">
@@ -32,7 +32,7 @@
                                         <items>
                                             <barButtonItem style="plain" id="xPl-tA-F1l">
                                                 <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wyh-Yh-CUs">
-                                                    <rect key="frame" x="20" y="11" width="30" height="22"/>
+                                                    <rect key="frame" x="16" y="11" width="30" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" image="PlayButton"/>
                                                     <state key="selected" image="PauseButton"/>
@@ -43,7 +43,7 @@
                                             </barButtonItem>
                                             <barButtonItem title="Item" style="plain" id="MXm-RO-85W">
                                                 <slider key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="BeF-be-MZ1">
-                                                    <rect key="frame" x="60" y="7" width="842" height="31"/>
+                                                    <rect key="frame" x="56" y="7" width="842" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                                     <connections>
                                                         <action selector="seekBarValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="1Yy-Bn-n9z"/>
@@ -52,7 +52,7 @@
                                             </barButtonItem>
                                             <barButtonItem style="plain" id="NQ4-Y8-Ph5">
                                                 <button key="customView" hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="oMR-Ds-53c">
-                                                    <rect key="frame" x="912" y="7" width="37" height="30"/>
+                                                    <rect key="frame" x="908" y="7" width="37" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal">
                                                         <color key="titleColor" red="1" green="0.23423837550000001" blue="0.91737058989999998" alpha="1" colorSpace="calibratedRGB"/>
@@ -61,7 +61,7 @@
                                             </barButtonItem>
                                             <barButtonItem style="plain" id="m3U-1N-0Hm">
                                                 <button key="customView" hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ETx-EO-spu">
-                                                    <rect key="frame" x="959" y="7" width="46" height="30"/>
+                                                    <rect key="frame" x="955" y="7" width="46" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <state key="selected" title="Pause"/>
@@ -173,22 +173,32 @@
                                     <constraint firstItem="mLv-7h-dip" firstAttribute="leading" secondItem="xDX-zA-YKg" secondAttribute="leading" id="weO-Ts-CcQ"/>
                                 </constraints>
                             </view>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="iDR-Si-cBO">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="37" id="3YD-Ww-nKu"/>
+                                    <constraint firstAttribute="width" constant="37" id="5Ol-Tk-Shn"/>
+                                </constraints>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="xDX-zA-YKg" secondAttribute="trailing" id="8Oo-U3-A83"/>
                             <constraint firstItem="xDX-zA-YKg" firstAttribute="top" secondItem="gkb-ZD-qB1" secondAttribute="bottom" id="Oth-uv-8yN"/>
                             <constraint firstItem="xDX-zA-YKg" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="TNc-CI-YnG"/>
+                            <constraint firstItem="iDR-Si-cBO" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="eeh-Rb-wGy"/>
                             <constraint firstAttribute="trailing" secondItem="gkb-ZD-qB1" secondAttribute="trailing" id="fpL-Qf-DvM"/>
                             <constraint firstItem="gkb-ZD-qB1" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="jI7-uK-Vnm"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="xDX-zA-YKg" secondAttribute="bottom" id="oeq-wG-o5F"/>
+                            <constraint firstItem="iDR-Si-cBO" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="p97-Ue-gTJ"/>
                             <constraint firstItem="gkb-ZD-qB1" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="pxo-6p-ede"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="containerView" destination="gkb-ZD-qB1" id="rYb-oU-aXb"/>
+                        <outlet property="controlsView" destination="xDX-zA-YKg" id="vqt-Jn-NA6"/>
                         <outlet property="currentTime" destination="0fG-PG-cIT" id="QxC-VM-yt9"/>
                         <outlet property="duration" destination="pKd-R2-51d" id="VQn-JB-wpR"/>
+                        <outlet property="loadingIndicator" destination="iDR-Si-cBO" id="OQT-xb-fqy"/>
                         <outlet property="playPauseButton" destination="Wyh-Yh-CUs" id="HED-JT-JOk"/>
                         <outlet property="seekBar" destination="BeF-be-MZ1" id="UfS-wo-wib"/>
                         <outlet property="toolBar" destination="mLv-7h-dip" id="eUQ-qD-Zj9"/>

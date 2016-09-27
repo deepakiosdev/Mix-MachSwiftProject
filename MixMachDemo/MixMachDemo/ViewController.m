@@ -21,6 +21,8 @@
 
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 @property (nonatomic, strong) PlayerViewController *playerVC;
+@property (weak, nonatomic) IBOutlet UIView *controlsView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
 @end
 
 @implementation ViewController
@@ -32,6 +34,7 @@
     _playPauseButton.enabled    = NO;
     _currentTime.text           = @"00:00:00:00";
     _duration.text              = @"00:00:00:00";
+    [_controlsView setUserInteractionEnabled:NO];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -69,15 +72,19 @@
 //****************************************************
 // MARK: - PlayerViewControllerDelegate Methods
 //****************************************************
+
 - (void)playerTimeUpdateWithTime:(double)time {
     self.seekBar.value  = time;
     _currentTime.text   = [_playerVC getTimeCodeFromSeondsWithTime:time];
 }
 
 - (void)playerReadyToPlay {
+    NSLog(@"playerReadyToPlay....");
     self.seekBar.maximumValue   = _playerVC.duration;
     _playPauseButton.enabled    = YES;
     _duration.text              = [_playerVC getTimeCodeFromSeondsWithTime:_playerVC.duration];
+    [_controlsView setUserInteractionEnabled:YES];
+    [_loadingIndicator stopAnimating];
 }
 
 - (void)playerFrameRateChangedWithFrameRate:(float)frameRate {
@@ -90,6 +97,19 @@
     }
 }
 
+- (void)buffering {
+    NSLog(@"buffering.....");
+    [_controlsView setUserInteractionEnabled:NO];
+    [_loadingIndicator startAnimating];
+    [_playerVC pause];
+}
+
+- (void)bufferingFinsihed {
+    NSLog(@"bufferingFinsihed.....");
+    [_controlsView setUserInteractionEnabled:YES];
+    [_loadingIndicator stopAnimating];
+    [_playerVC play];
+}
 
 //****************************************************
 // MARK: - Action Methods
@@ -126,7 +146,7 @@
 }
 
 - (IBAction)fastForward:(id)sender {
-    [_playerVC playeForward];
+    [_playerVC playForward];
 }
 
 

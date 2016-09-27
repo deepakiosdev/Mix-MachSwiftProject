@@ -16,6 +16,8 @@
 @property (weak, nonatomic) IBOutlet UISlider *seekBar;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolBar;
 @property (weak, nonatomic) IBOutlet UIButton *playPauseButton;
+@property (weak, nonatomic) IBOutlet UILabel *currentTime;
+@property (weak, nonatomic) IBOutlet UILabel *duration;
 
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 @property (nonatomic, strong) PlayerViewController *playerVC;
@@ -25,15 +27,17 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.seekBar.value = 0.0;
-    // Do any additional setup after loading the view, typically from a nib.
-
+    
+    _seekBar.value              = 0.0;
+    _playPauseButton.enabled    = NO;
+    _currentTime.text           = @"00:00:00:00";
+    _duration.text              = @"00:00:00:00";
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    _playPauseButton.enabled = NO;
+
    /* _playerVC = [PlayerViewController new];
     NSString *url = @"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
     AVPlayerViewController *playerVC = [self.storyboard instantiateViewControllerWithIdentifier:@"PlayerViewController"];
@@ -66,17 +70,17 @@
 // MARK: - PlayerViewControllerDelegate Methods
 //****************************************************
 - (void)playerTimeUpdateWithTime:(double)time {
-    self.seekBar.value = time;
-
+    self.seekBar.value  = time;
+    _currentTime.text   = [_playerVC getTimeCodeFromSeondsWithTime:time];
 }
 
 - (void)playerReadyToPlay {
     self.seekBar.maximumValue   = _playerVC.duration;
     _playPauseButton.enabled    = YES;
-
+    _duration.text              = [_playerVC getTimeCodeFromSeondsWithTime:_playerVC.duration];
 }
 
-- (void)playerFrameRateChangedWithFrameRate:(double)frameRate {
+- (void)playerFrameRateChangedWithFrameRate:(float)frameRate {
     
     if (frameRate == 0.0) {
         _playPauseButton.selected = NO;
@@ -84,7 +88,6 @@
         _playPauseButton.selected = YES;
 
     }
-
 }
 
 
@@ -92,7 +95,8 @@
 // MARK: - Action Methods
 //****************************************************
 
-- (IBAction)seekBarValueChanged:(id)sender {
+- (IBAction)seekBarValueChanged:(UISlider *)sender {
+    _playerVC.currentTime = sender.value;
 }
 
 - (IBAction)playPause:(UIButton *)sender {
@@ -100,15 +104,31 @@
     //sender.selected = !sender.selected;
 }
 
-- (IBAction)next:(id)sender {
+- (IBAction)moveToPreviousFrame:(id)sender {
+    [_playerVC stepFramesByCount:-1];
 }
 
-- (IBAction)repeat:(id)sender {
+- (IBAction)moveToNextFrame:(id)sender {
+    [_playerVC stepFramesByCount:1];
 }
+
+- (IBAction)moveBackwordBySec:(id)sender {
+    [_playerVC stepSecondsByCount:-1];
+}
+
+- (IBAction)moveForwordBySec:(id)sender {
+    [_playerVC stepSecondsByCount:1];
+}
+
 
 - (IBAction)revsersePlayback:(id)sender {
-    [_playerVC reversePlayback];
+    [_playerVC playReverse];
 }
+
+- (IBAction)fastForward:(id)sender {
+    [_playerVC playeForward];
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

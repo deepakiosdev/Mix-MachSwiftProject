@@ -23,7 +23,7 @@ private var playerViewControllerKVOContext  = 0
 @objc protocol PlayerViewControllerDelegate {
     func playerTimeUpdate(time:Double)
     func playerReadyToPlay()
-    func playerFrameRateChanged(frameRate:Double)
+    func playerFrameRateChanged(frameRate:Float)
 }
 
 @objc public class PlayerViewController: NSObject, AVAssetResourceLoaderDelegate {
@@ -44,13 +44,14 @@ private var playerViewControllerKVOContext  = 0
     
     var delegate:PlayerViewControllerDelegate! = nil
     
-    var mediaPlayer: AVPlayerViewController = AVPlayerViewController () {
+    ////
+    var mediaPlayer: AVPlayerViewController! {
             didSet {
                 mediaPlayer.showsPlaybackControls   = false
         }
     }
 
-
+    ////
     var queuePlayer: AVQueuePlayer? {
         didSet {
             if let player = queuePlayer {
@@ -59,6 +60,7 @@ private var playerViewControllerKVOContext  = 0
         }
     }
 
+    ////
     var urlAsset: AVURLAsset? {
         didSet {
             guard let newAsset = urlAsset else { return }
@@ -66,9 +68,10 @@ private var playerViewControllerKVOContext  = 0
         }
     }
     
-    private var playerItem: AVPlayerItem? = nil {
+    ////
+    private var currentItem: AVPlayerItem? = nil {
         willSet {
-            if playerItem == nil {
+            if currentItem == nil {
                 //removeObservers()
             }
         }
@@ -77,23 +80,20 @@ private var playerViewControllerKVOContext  = 0
              If needed, configure player item here before associating it with a player.
              (example: adding outputs, setting text style rules, selecting media options)
              */
-            if playerItem != nil && queuePlayer != nil {
+            if currentItem != nil && queuePlayer != nil {
                 
-                if (queuePlayer?.canInsert(self.playerItem!, after: nil))! {
-                    queuePlayer?.insert(self.playerItem!, after: nil)
-                    
-                    // let playerItem      = AVPlayerItem(asset: urlAsset!)
-                    
-                    //queuePlayer         = AVQueuePlayer(playerItem: playerItem)
-                   // queuePlayer  = queuePlayer
-                    
+                if (queuePlayer?.canInsert(self.currentItem!, after: nil))! {
+                    queuePlayer?.insert(self.currentItem!, after: nil)
                 }
-                // queuePlayer?.replaceCurrentItem(with: self.playerItem)
                 prepareToPlay()
             }
         }
     }
     
+    ////
+    var frameRate: Int32!
+    
+    ////
     var isPlaying : Bool {
         get {
             if (queuePlayer?.rate != 0 && queuePlayer?.error == nil) {
@@ -103,16 +103,19 @@ private var playerViewControllerKVOContext  = 0
         }
     }
     
-   /* var rate: Float {
+    ////
+    var rate: Float {
         get {
             return (queuePlayer?.rate)!
         }
         
         set {
             queuePlayer?.rate = newValue
+            print("Player rate:\(queuePlayer?.rate)")
         }
-    }*/
+    }
     
+    ////
     var currentTime: Double {
         get {
             return CMTimeGetSeconds(queuePlayer!.currentTime())
@@ -124,15 +127,31 @@ private var playerViewControllerKVOContext  = 0
         }
     }
     
+    ////
     var duration: Double {
         guard let currentItem = queuePlayer?.currentItem else { return 0.0 }
         
         return CMTimeGetSeconds(currentItem.duration)
     }
-   
+    
+    /*
+     A formatter for individual date components used to provide an appropriate
+     value for the `startTimeLabel` and `durationLabel`.
+     */
+   let timeRemainingFormatter: DateComponentsFormatter = {
+        let formatter                       = DateComponentsFormatter()
+        formatter.zeroFormattingBehavior    = .dropMiddle //.pad
+        formatter.allowedUnits              = [.hour, .minute, .second]
+        
+        return formatter
+    }()
+
+
+    
     //****************************************************
     // MARK: - Life Cycle Methods
     //****************************************************
+    
     override init() {
 
     }
@@ -173,14 +192,14 @@ private var playerViewControllerKVOContext  = 0
     
     func addObservers() {
         // Register as an observer of the player item's status property
-        if (playerItem != nil) {
-            playerItem?.addObserver(self,
+        if (currentItem != nil) {
+            currentItem?.addObserver(self,
                                     forKeyPath: #keyPath(AVPlayerItem.status),
                                     options: [.old, .new],
                                     context: &playerViewControllerKVOContext)
             
             
-            playerItem?.addObserver(self,
+            currentItem?.addObserver(self,
                                     forKeyPath: #keyPath(AVPlayerItem.duration),
                                     options: [.old, .new],
                                     context: &playerViewControllerKVOContext)
@@ -200,9 +219,9 @@ private var playerViewControllerKVOContext  = 0
     }
     
      func removeObservers() {
-        if (playerItem != nil) {
-            playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.duration), context: &playerViewControllerKVOContext)
-            playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerViewControllerKVOContext)
+        if (currentItem != nil) {
+            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.duration), context: &playerViewControllerKVOContext)
+            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerViewControllerKVOContext)
         }
         
         if (queuePlayer != nil) {
@@ -214,19 +233,20 @@ private var playerViewControllerKVOContext  = 0
     }
     
     func prepareToPlay() {
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
+        frameRate = getAssetFrameRate()
+        NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: currentItem)
         addObservers()
         setupPlayerPeriodicTimeObserver()
     }
 
     func cleanUp() {
         pause()
+        currentTime = 0.0
         removeObservers()
         NotificationCenter.default.removeObserver(self)
         queuePlayer?.removeAllItems()
-        playerItem  = nil
         urlAsset    = nil
+        currentItem = nil
         queuePlayer = nil
     }
     
@@ -236,13 +256,37 @@ private var playerViewControllerKVOContext  = 0
             self.delegate!.playerFrameRateChanged(frameRate: 0)
             self.delegate!.playerTimeUpdate(time:Double(0.0))
             cleanUp()
-            currentTime = 0.0
             initPlayer(urlString: "")
         }
     }
     
+    func getAssetFrameRate() -> Int32 {
+        frameRate = 0
+        for track in (currentItem?.tracks)! {
+            
+            if(track.assetTrack.mediaType == AVMediaTypeVideo) {
+                frameRate = Int32(track.currentVideoFrameRate)
+                break
+            }
+        }
+        
+        if (frameRate == 0) {
+            
+            if (currentItem?.asset != nil) {
+                if let videoTrack = currentItem?.asset.tracks(withMediaType: AVMediaTypeVideo).last {
+                    frameRate = Int32(videoTrack.nominalFrameRate)
+                }
+            }
+        }
+        
+        if (frameRate == 0) {
+            frameRate = 25
+        }
+        return frameRate
+    }
+
     // MARK: - Error Handling
-    
+
     func handleErrorWithMessage(_ message: String?, error: Error? = nil) {
         NSLog("Error occured with message: \(message), error: \(error).")
     }
@@ -298,8 +342,9 @@ private var playerViewControllerKVOContext  = 0
                  We can play this asset. Create a new `AVPlayerItem` and make
                  it our player's current item.
                  */
-                self.playerItem = AVPlayerItem(asset: newAsset)
-                self.playerItem?.seek(to: kCMTimeZero)
+                //self.currentItem = AVPlayerItem(asset: newAsset)
+                self.currentItem = AVPlayerItem(asset: newAsset, automaticallyLoadedAssetKeys:self.assetKeysRequiredToPlay)
+                self.currentItem?.seek(to: kCMTimeZero)
             }
         }
     }
@@ -309,6 +354,8 @@ private var playerViewControllerKVOContext  = 0
     //****************************************************
     
     
+    // MARK: - Player related methods
+
     public func initPlayer(urlString: String) {
         
         ///////////Demo Urls//////////////////////////////////////
@@ -448,7 +495,6 @@ private var playerViewControllerKVOContext  = 0
                      */
                     self.delegate!.playerReadyToPlay()
                     print("canPlayReverse:\(queuePlayer?.currentItem?.canPlayReverse)")
-
                 }
             }
         } else if keyPath == #keyPath(AVPlayerItem.duration) {
@@ -456,7 +502,7 @@ private var playerViewControllerKVOContext  = 0
         }
         else if keyPath == #keyPath(AVPlayer.rate) {
             // Update playPauseButton type.
-            let newRate = (change?[NSKeyValueChangeKey.newKey] as! NSNumber).doubleValue
+            let newRate = (change?[NSKeyValueChangeKey.newKey] as! NSNumber).floatValue
             self.delegate!.playerFrameRateChanged(frameRate: newRate)
         }
         else if keyPath == #keyPath(AVPlayer.currentItem) {
@@ -528,14 +574,106 @@ private var playerViewControllerKVOContext  = 0
         queuePlayer?.pause()
     }
     
-    public func reversePlayback() {
-        
-        if let reversePlay = queuePlayer!.currentItem?.canPlayReverse  {
-            print("reversePlay = \(reversePlay)")
-            queuePlayer!.rate = -1.0
+    // TODO: For |reversePlayback| and |fastForwardPlayback| put check canPlayFastForward, canPlaySlowForward, canPlayReverse etc... and make a single method
+    public func playReverse() {
+        // Rewind no faster than -2.0.
+      var playerRate = max((queuePlayer?.rate)! - 0.5, -2.0)
+        if (playerRate >= 0) {
+          playerRate = -0.5
         }
+        rate = playerRate
     }
     
+    public func playeForward() {
+        //Fast forward no faster than 2.0.
+        var playerRate = min((queuePlayer?.rate)! + 0.5, 2.0)
+        if (rate <= 0) {
+            playerRate = 0.5
+        }
+        rate = playerRate
+
+    }
+    
+    /*
+     * |numberOfFrame| +ve value means move forward and -ve backwoard
+     */
+    public func stepFrames(byCount numberOfFrame:Int) {
+        currentItem?.cancelPendingSeeks()
+        print("canStepForward\(currentItem?.canStepForward)")
+        print("canStepBackward\(currentItem?.canStepBackward)")
+
+        //currentItem?.step(byCount: numberOfFrame)
+        let currentTime         = currentItem?.currentTime()
+        var currentTimeScale    = CMTimeConvertScale(currentTime!, frameRate, CMTimeRoundingMethod.default)
+        
+        if (numberOfFrame > 0) {
+            currentTimeScale.value += numberOfFrame
+        } else {
+            currentTimeScale.value -= numberOfFrame
+        }
+        
+        queuePlayer?.seek(to: currentTimeScale, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
+            self.pause()
+        })
+    }
+
+    
+    public func stepSeconds(byCount numberOfSecond:Int64) {
+        pause()
+        currentItem?.cancelPendingSeeks()
+        let seconds = CMTimeMake(numberOfSecond, frameRate)
+        //queuePlayer?.seek(to: seconds) // Optimized for speed
+        
+        if let currentTime = queuePlayer?.currentTime() {
+            
+            var seekTime = kCMTimeZero
+            if numberOfSecond > 0 {
+                seekTime = CMTimeAdd(currentTime, seconds)
+            } else {
+                seekTime = CMTimeSubtract(currentTime, seconds)
+            }
+            
+            queuePlayer?.seek(to: seekTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
+                self.pause()
+            })
+        }
+        
+    }
+    
+    
+    
+    public func moveTo(numberOfSecond seconds:Int64) {
+        
+        /*let seconds = CMTimeMake(seconds, 1)
+        player?.seekToTime(fiveSecondsIn) // Optimized for speed
+        player?.seekToTime(fiveSecondsIn, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero) // Optimized for precision
+        
+        if let currentTime = player?.currentTime() {
+            let fiveSecondsAhead = CMTimeAdd(currentTime, fiveSecondsIn)
+            player?.seekToTime(fiveSecondsAhead)
+        }*/
+
+    }
+    // MARK: - Time utility methods
+
+    public func getTimeString(time: Float) -> String {
+        let components      = NSDateComponents()
+        components.second   = Int(max(0.0, time))
+        
+        return timeRemainingFormatter.string(from: components as DateComponents)!
+    }
+
+    public func getTimeCodeFromSeonds(time: Float) -> String {
+    
+        let sec             = Int(time) % 60
+        let min             = (Int(time)/60) % 60
+        let hours           = (Int(time)/3600) % 60
+        let currentTime     = CMTimeMakeWithSeconds(Float64(time), frameRate)
+        let currentTimeF    = CMTimeConvertScale(currentTime, frameRate, CMTimeRoundingMethod.default)
+        let frame           = fmodf(Float(currentTimeF.value), Float(frameRate))
+        return String(format: "%02d:%02d:%02d:%02d", hours, min, sec, Int(frame))
+    }
+  
     
     //****************************************************
     // MARK: - AVAssetResourceLoaderDelegate methods

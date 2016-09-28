@@ -90,7 +90,6 @@
 			children = (
 				9E5D1A601D98FE3C004D9806 /* WebService */,
 				9E5D1A571D98EDA2004D9806 /* 3rdPartyLib */,
-				005285AD1D96E13D00CDA84B /* trailer_720p.mov */,
 				005285941D96D72200CDA84B /* AppDelegate.h */,
 				005285951D96D72200CDA84B /* AppDelegate.m */,
 				005285971D96D72200CDA84B /* ViewController.h */,
@@ -108,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				005285921D96D72200CDA84B /* main.m */,
+				005285AD1D96E13D00CDA84B /* trailer_720p.mov */,
 				9EE4C2011D993E5900CAD8F5 /* ElephantSeals.mov */,
 				9E5D1A701D99083E004D9806 /* bipbopall.m3u8 */,
 				9E5D1A6C1D990800004D9806 /* AES_encrypted_oceans_aes.m3u8 */,

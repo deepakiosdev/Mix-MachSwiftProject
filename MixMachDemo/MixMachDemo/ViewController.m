@@ -89,7 +89,7 @@
 
 - (void)playerFrameRateChangedWithFrameRate:(float)frameRate {
     
-    if (frameRate == 0.0) {
+    if (frameRate == 0) {
         _playPauseButton.selected = NO;
     } else {
         _playPauseButton.selected = YES;
@@ -97,18 +97,20 @@
     }
 }
 
-- (void)buffering {
+- (void)buffering
+{
     NSLog(@"buffering.....");
     [_controlsView setUserInteractionEnabled:NO];
     [_loadingIndicator startAnimating];
-    [_playerVC pause];
+    //[_playerVC pause];
 }
 
-- (void)bufferingFinsihed {
+- (void)bufferingFinsihed
+{
     NSLog(@"bufferingFinsihed.....");
     [_controlsView setUserInteractionEnabled:YES];
     [_loadingIndicator stopAnimating];
-    [_playerVC play];
+    //[_playerVC play];
 }
 
 //****************************************************

@@ -14,5 +14,6 @@ typedef void (^ProgressHandler)(CGFloat progressValue);
 typedef void (^downloadedData)(NSData* data);
 
 @interface NetworkManager : NSObject
-
+-(void)startAsyncDownload:(NSString*)urlString progress:(ProgressHandler)progHandler finished:(CompletionHandler)compHandler;
+-(NSString*)getStreamDecryptionKey;
 @end

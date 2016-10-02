@@ -43,6 +43,7 @@ private var playerViewControllerKVOContext  = 0
         "playable",
         "hasProtectedContent"
     ]
+    let CUSTOM_SCHEME =  "cspum3u8"
     
     //MARK: - Variables
     var timeObserverToken: Any?
@@ -52,44 +53,24 @@ private var playerViewControllerKVOContext  = 0
     var previousRate: Float = 0.0
     var isPlayerInitilaized = false
     var isAutoPlay          = false
+    var queuePlayer         = AVQueuePlayer()
+    var urlAsset: AVURLAsset?
 
     //MARK: - Computed Properties
-
-    ////
-    var queuePlayer: AVQueuePlayer? {
-        didSet {
-            if let player = queuePlayer {
-                mediaPlayer.player = player
-            }
-        }
-    }
-
-    ////
-    var urlAsset: AVURLAsset? {
-        didSet {
-            guard let newAsset = urlAsset else { return }
-            asynchronouslyLoadURLAsset(newAsset)
-        }
-    }
     
     ////
-    private var currentItem: AVPlayerItem? = nil {
-        willSet {
-            if currentItem == nil {
-                //removeObservers()
-            }
-        }
+    @objc private var currentItem: AVPlayerItem? = nil {
         didSet {
             /*
              If needed, configure player item here before associating it with a player.
              (example: adding outputs, setting text style rules, selecting media options)
              */
-            if currentItem != nil && queuePlayer != nil {
-                
-                if (queuePlayer?.canInsert(self.currentItem!, after: nil))! {
-                    queuePlayer?.insert(self.currentItem!, after: nil)
+            if currentItem != nil {
+                if (queuePlayer.canInsert(self.currentItem!, after: nil)) {
+                    queuePlayer.insert(self.currentItem!, after: nil)
                 }
                 prepareToPlay()
+                
             }
         }
     }
@@ -97,7 +78,7 @@ private var playerViewControllerKVOContext  = 0
     ////
     var isPlaying : Bool {
         get {
-            if (queuePlayer?.rate != 0 && queuePlayer?.error == nil) {
+            if (queuePlayer.rate != 0 && queuePlayer.error == nil) {
                 return true
             }
             return false
@@ -107,173 +88,148 @@ private var playerViewControllerKVOContext  = 0
     ////
     var rate: Float {
         get {
-            return (queuePlayer?.rate)!
+            return (queuePlayer.rate)
         }
         set {
             self.previousRate = newValue
-            queuePlayer?.rate = newValue
-            print("Player rate:\(queuePlayer?.rate)")
+            queuePlayer.rate = newValue
+            print("Player rate:\(queuePlayer.rate)")
         }
     }
     
     ////
     var currentTime: Double {
         get {
-            return CMTimeGetSeconds(queuePlayer!.currentTime())
+            return CMTimeGetSeconds(queuePlayer.currentTime())
         }
         set {
             let newTime = CMTimeMakeWithSeconds(newValue, Int32(frameRate))
-            queuePlayer?.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
+            queuePlayer.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
             })
         }
     }
     
     ////
     var duration: Double {
-        guard let currentItem = queuePlayer?.currentItem else { return 0.0 }
+        guard let currentItem = queuePlayer.currentItem else { return 0.0 }
         
         return CMTimeGetSeconds(currentItem.duration)
     }
     
-    /*
-     A formatter for individual date components used to provide an appropriate
-     value for the `startTimeLabel` and `durationLabel`.
-     */
-   let timeRemainingFormatter: DateComponentsFormatter = {
-        let formatter                       = DateComponentsFormatter()
-        formatter.zeroFormattingBehavior    = .dropMiddle //.pad
-        formatter.allowedUnits              = [.hour, .minute, .second]
-        
-        return formatter
-    }()
-
-
     
     //****************************************************
     // MARK: - Life Cycle Methods
     //****************************************************
     
     override init() {
-
+        
     }
     
     deinit {
         cleanUp()
         delegate = nil
     }
-
+    
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     
     //****************************************************
     //MARK: - Priavate methods
     //****************************************************
     
     private func setupPlayerPeriodicTimeObserver() {
-         // Only add the time observer if one hasn't been created yet.
-         guard timeObserverToken == nil else { return }
+        // Only add the time observer if one hasn't been created yet.
+        guard timeObserverToken == nil else { return }
         let frame = 1.0/frameRate
         // Make sure we don't have a strong reference cycle by only capturing self as weak.
         let interval        = CMTimeMakeWithSeconds(Float64(frame), Int32(NSEC_PER_SEC))
-        timeObserverToken   = queuePlayer?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [unowned self] time in
+        timeObserverToken   = queuePlayer.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [unowned self] time in
             let timeElapsed  = Double(CMTimeGetSeconds((self.currentItem?.currentTime())!))
-           // print("timeElapsed:\(timeElapsed)")
+            // print("timeElapsed:\(timeElapsed)")
             self.delegate!.playerTimeUpdate(time:timeElapsed)
         }
     }
     
     private func cleanUpPlayerPeriodicTimeObserver() {
         if let timeObserverToken = timeObserverToken {
-            queuePlayer?.removeTimeObserver(timeObserverToken)
+            queuePlayer.removeTimeObserver(timeObserverToken)
             self.timeObserverToken = nil
         }
     }
     
     func addObservers() {
         // Register as an observer of the player item's status property
-        if (currentItem != nil) {
-            currentItem?.addObserver(self,
-                                    forKeyPath: #keyPath(AVPlayerItem.status),
-                                    options: [.old, .new],
-                                    context: &playerViewControllerKVOContext)
-            
-            
-            currentItem?.addObserver(self,
-                                    forKeyPath: #keyPath(AVPlayerItem.duration),
-                                    options: [.old, .new],
-                                    context: &playerViewControllerKVOContext)
-            currentItem?.addObserver(self,
-                                     forKeyPath: #keyPath(AVPlayerItem.playbackLikelyToKeepUp),
-                                     options: [.old, .new],
-                                     context: &playerViewControllerKVOContext)
-            currentItem?.addObserver(self,
-                                     forKeyPath: #keyPath(AVPlayerItem.playbackBufferEmpty),
-                                     options: [.old, .new],
-                                     context: &playerViewControllerKVOContext)
-            currentItem?.addObserver(self,
-                                     forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges),
-                                     options: [.old, .new],
-                                     context: &playerViewControllerKVOContext)
-        }
+        queuePlayer.addObserver(self,
+                    forKeyPath: #keyPath(currentItem.status),
+                    options: [.old, .new],
+                    context: &playerViewControllerKVOContext)
+        
+        
+        queuePlayer.addObserver(self,
+                    forKeyPath: #keyPath(currentItem.duration),
+                    options: [.old, .new],
+                    context: &playerViewControllerKVOContext)
+        queuePlayer.addObserver(self,
+                    forKeyPath: #keyPath(currentItem.playbackLikelyToKeepUp),
+                    options: [.old, .new],
+                    context: &playerViewControllerKVOContext)
+        queuePlayer.addObserver(self,
+                    forKeyPath: #keyPath(currentItem.playbackBufferEmpty),
+                    options: [.old, .new],
+                    context: &playerViewControllerKVOContext)
+        queuePlayer.addObserver(self,
+                    forKeyPath: #keyPath(currentItem.loadedTimeRanges),
+                    options: [.old, .new],
+                    context: &playerViewControllerKVOContext)
 
-        if (queuePlayer != nil) {
-            queuePlayer?.addObserver(self,
-                                     forKeyPath: #keyPath(AVPlayer.rate),
-                                     options: [.old, .new],
-                                     context: &playerViewControllerKVOContext)
-            
-            queuePlayer?.addObserver(self,
-                                     forKeyPath: #keyPath(AVPlayer.currentItem),
-                                     options: [.old, .new],
-                                     context: &playerViewControllerKVOContext)
-           
-        }
+        queuePlayer.addObserver(self,
+                    forKeyPath: #keyPath(rate),
+                    options: [.old, .new],
+                    context: &playerViewControllerKVOContext)
+        
+        queuePlayer.addObserver(self,
+                    forKeyPath: #keyPath(currentItem),
+                    options: [.old, .new],
+                    context: &playerViewControllerKVOContext)
+        
     }
     
-     func removeObservers() {
-        if (currentItem != nil) {
-            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.duration), context: &playerViewControllerKVOContext)
-            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerViewControllerKVOContext)
-            
-            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.playbackLikelyToKeepUp), context: &playerViewControllerKVOContext)
-
-            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.playbackBufferEmpty), context: &playerViewControllerKVOContext)
-
-            currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges), context: &playerViewControllerKVOContext)
-        }
-        
-        if (queuePlayer != nil) {
-            queuePlayer?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.rate), context: &playerViewControllerKVOContext)
-            queuePlayer?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.currentItem), context: &playerViewControllerKVOContext)
-        }
+    func removeObservers() {
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.duration), context: &playerViewControllerKVOContext)
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.status), context: &playerViewControllerKVOContext)
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.playbackLikelyToKeepUp), context: &playerViewControllerKVOContext)
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.playbackBufferEmpty), context: &playerViewControllerKVOContext)
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.loadedTimeRanges), context: &playerViewControllerKVOContext)
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(rate), context: &playerViewControllerKVOContext)
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem), context: &playerViewControllerKVOContext)
+     
         cleanUpPlayerPeriodicTimeObserver()
-
+        
     }
     
     func prepareToPlay() {
         frameRate = getAssetFrameRate()
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: currentItem)
-        addObservers()
+        //addObservers()
         setupPlayerPeriodicTimeObserver()
     }
-
+    
     func cleanUp() {
         pause()
         rate        = 0.0
         currentTime = 0.0
         removeObservers()
         NotificationCenter.default.removeObserver(self)
-        queuePlayer?.removeAllItems()
+        queuePlayer.removeAllItems()
         urlAsset    = nil
         currentItem = nil
-        queuePlayer = nil
     }
     
     func playerDidFinishPlaying(note: NSNotification) {
-        if (queuePlayer?.items().isEmpty)! == false && (duration != 0.0) {
-            print("Play queue emptied out due to bad player item. End looping")
+        if (queuePlayer.items().isEmpty) == false && (duration != 0.0) {
+            print("PlayerDidFinishPlaying current item...")
             self.delegate!.playerFrameRateChanged(frameRate: 0)
             self.delegate!.playerTimeUpdate(time:Double(0.0))
             cleanUp()
@@ -305,7 +261,7 @@ private var playerViewControllerKVOContext  = 0
         }
         return frameRate
     }
-
+    
     func asynchronouslyLoadURLAsset(_ newAsset: AVURLAsset) {
         /*
          Using AVAsset now runs the risk of blocking the current thread (the
@@ -319,12 +275,12 @@ private var playerViewControllerKVOContext  = 0
              we'll elect to use the main thread at all times, let's dispatch
              our handler to the main queue.
              */
-            DispatchQueue.main.sync {
+            DispatchQueue.main.async {
                 /*
                  `self.asset` has already changed! No point continuing because
                  another `newAsset` will come along in a moment.
                  */
-                guard newAsset == self.urlAsset else { return }
+                // guard newAsset == self.urlAsset else { return }
                 
                 /*
                  Test whether the values of each of the keys we need have been
@@ -358,7 +314,11 @@ private var playerViewControllerKVOContext  = 0
                  it our player's current item.
                  */
                 //self.currentItem = AVPlayerItem(asset: newAsset)
+                self.urlAsset = newAsset
                 self.currentItem = AVPlayerItem(asset: newAsset, automaticallyLoadedAssetKeys:self.assetKeysRequiredToPlay)
+                //self.prepareToPlay()
+                //self.play()
+                
                 self.currentItem?.seek(to: kCMTimeZero)
             }
         }
@@ -376,58 +336,82 @@ private var playerViewControllerKVOContext  = 0
     
     
     // MARK: - Player related methods
-
+    
     public func initPlayer(urlString: String) {
         
+        var urlString = urlString
         ///////////Demo Urls//////////////////////////////////////
-       var urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
+        ///var urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
         //var urlString   = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
-        let localURL    = true
-        //let localURL    = false
-
+        //let localURL    = true
+        let localURL    = false
+        
         // MARK: - m3u8 urls
         // let urlString = Bundle.main.path(forResource: "bipbopall", ofType: "m3u8")!
         
         //var urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
-      //  var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
+        //  var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
         //var urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
         
-        //var urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
+        urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
         //let urlString = "https://devimages.apple.com.edgekey.net/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8" //(Reverse playback)
         //let urlString = "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8" //(4K)
         //let urlString = "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch3/appleman.m3u8" //((LIVE TV)
         //var urlString  = "http://cdn-fms.rbs.com.br/vod/hls_sample1_manifest.m3u8"
         // MARK: - App urls
-       //var urlString = "http://nmstream2.clearhub.tv/nmdcMaa/20130713/others/30880d62-2c5b-4487-8ff1-5794d086bea7.mp4"
+        // var urlString = "http://nmstream2.clearhub.tv/nmdcMaa/20130713/others/30880d62-2c5b-4487-8ff1-5794d086bea7.mp4"
+        //var urlString = "cplp://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"
         
         
         //////////////////////////////////////////
+        // configurePlayer()
+        // return;
         
         self.delegate.buffering()
         isPlayerInitilaized = false
-        var urlStr          = urlString as NSString
-        if urlStr.range(of:".m3u8").location == NSNotFound {
-            urlStr = urlString.replacingOccurrences(of:"http", with:"playlist") as NSString
+       /* var urlStr          = urlString as NSString
+        
+        if (urlStr.range(of:".m3u8").location != NSNotFound && urlStr.range(of:"isml").location == NSNotFound){
+            urlStr = urlString.replacingOccurrences(of:"http", with:CUSTOM_SCHEME) as NSString
         }
-        urlString   = urlStr as String
+        urlString   = urlStr as String*/
         var url     = URL.init(string: urlString)!
         if (localURL) {
             url =  URL(fileURLWithPath: urlString)
         }
         print("Streming URL:",urlString)
-
+        
         let headers : [String: String] = ["User-Agent": "iPad"]
-
+        
         queuePlayer = AVQueuePlayer()
-        urlAsset    = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
-        let resourceLoader  = urlAsset?.resourceLoader
-        resourceLoader?.setDelegate(self, queue:DispatchQueue.main)
+        mediaPlayer.player = queuePlayer
+        addObservers()
+        
+        let urlAsset    = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
+        urlAsset.resourceLoader.setDelegate(self, queue:DispatchQueue.main)
+        //let playerItem = AVPlayerItem(asset: urlAsset)
+        // mediaPlayer.player = AVPlayer(playerItem: playerItem)
+        asynchronouslyLoadURLAsset(urlAsset)
+        
     }
-   
+    
+    func configurePlayer() {
+        // if I change m3u8 to different file extension, it's working good
+        let url = NSURL(string: "cplp://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8")
+        
+        let asset = AVURLAsset(url: url! as URL, options: nil)
+        asset.resourceLoader.setDelegate(self, queue:DispatchQueue.main)
+        
+        let playerItem = AVPlayerItem(asset: asset)
+        mediaPlayer.player = AVPlayer(playerItem: playerItem) // <-- the fix
+        mediaPlayer.player?.play()
+    }
+    
+    
     override public func observeValue(forKeyPath keyPath: String?,
-                               of object: Any?,
-                               change: [NSKeyValueChangeKey : Any]?,
-                               context: UnsafeMutableRawPointer?) {
+                                      of object: Any?,
+                                      change: [NSKeyValueChangeKey : Any]?,
+                                      context: UnsafeMutableRawPointer?) {
         print("keyPath:\(keyPath), change:\(change)")
         
         // Only handle observations for the playerViewControllerKVOContext
@@ -439,7 +423,7 @@ private var playerViewControllerKVOContext  = 0
             return
         }
         
-        if keyPath == #keyPath(AVPlayerItem.status) {
+        if keyPath == #keyPath(currentItem.status) {
             let newStatus: AVPlayerItemStatus
             if let newStatusAsNumber = change?[NSKeyValueChangeKey.newKey] as? NSNumber {
                 newStatus = AVPlayerItemStatus(rawValue: newStatusAsNumber.intValue)!
@@ -449,13 +433,13 @@ private var playerViewControllerKVOContext  = 0
             }
             
             if newStatus == .failed {
-                self.handleErrorWithMessage(queuePlayer?.currentItem?.error?.localizedDescription)
-
+                self.handleErrorWithMessage(queuePlayer.currentItem?.error?.localizedDescription)
+                
             }
             else if newStatus == .readyToPlay {
                 
-                if let asset = queuePlayer?.currentItem?.asset {
-
+                if let asset = queuePlayer.currentItem?.asset {
+                    
                     /*
                      First test whether the values of `assetKeysRequiredToPlay` we need
                      have been successfully loaded.
@@ -463,14 +447,14 @@ private var playerViewControllerKVOContext  = 0
                     for key in assetKeysRequiredToPlay {
                         var error: NSError?
                         if asset.statusOfValue(forKey: key, error: &error) == .failed {
-                            self.handleErrorWithMessage(queuePlayer?.currentItem?.error?.localizedDescription)
+                            self.handleErrorWithMessage(queuePlayer.currentItem?.error?.localizedDescription)
                             return
                         }
                     }
                     
                     if !asset.isPlayable || asset.hasProtectedContent {
                         // We can't play this asset.
-                        self.handleErrorWithMessage(queuePlayer?.currentItem?.error?.localizedDescription)
+                        self.handleErrorWithMessage(queuePlayer.currentItem?.error?.localizedDescription)
                         return
                     }
                     
@@ -479,69 +463,66 @@ private var playerViewControllerKVOContext  = 0
                      */
                     self.isPlayerInitilaized = true
                     self.delegate!.playerReadyToPlay()
-                    print("canPlayReverse:\(queuePlayer?.currentItem?.canPlayReverse)")
+                    print("canPlayReverse:\(queuePlayer.currentItem?.canPlayReverse)")
                 }
             }
-        } else if keyPath == #keyPath(AVPlayerItem.duration) {
- 
+        } else if keyPath == #keyPath(currentItem.duration) {
+            
         }
-        else if keyPath == #keyPath(AVPlayer.rate) {
+        else if keyPath == #keyPath(rate) {
             // Update playPauseButton type.
             let newRate = (change?[NSKeyValueChangeKey.newKey] as! NSNumber).floatValue
             self.delegate!.playerFrameRateChanged(frameRate: newRate)
         }
-        else if keyPath == #keyPath(AVPlayerItem.playbackLikelyToKeepUp) {
+        else if keyPath == #keyPath(currentItem.playbackLikelyToKeepUp) {
             self.delegate!.bufferingFinsihed()
             if (isAutoPlay) {
                 self.rate = self.previousRate
             }
         }
-        else if keyPath == #keyPath(AVPlayerItem.playbackBufferEmpty) {
+        else if keyPath == #keyPath(currentItem.playbackBufferEmpty) {
             self.delegate!.buffering()
         }
-        else if keyPath == #keyPath(AVPlayerItem.loadedTimeRanges) {
-
-            let timeRanges = change?[NSKeyValueChangeKey.newKey] as! [AnyObject]
- 
-            if (timeRanges.count > 0) {
-                let timerange:CMTimeRange   = timeRanges[0].timeRangeValue
-                let smartValue: CGFloat     = CGFloat(CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration)))
-                let duration: CGFloat       = CGFloat(CMTimeGetSeconds(self.queuePlayer!.currentTime()))
-                
-                if ((smartValue - duration > 5.0 || (smartValue == duration))) {
-                    self.delegate!.bufferingFinsihed()
-                    if (isAutoPlay) {
-                        self.rate = self.previousRate
+        else if keyPath == #keyPath(currentItem.loadedTimeRanges) {
+            
+            if let timeRanges = change?[NSKeyValueChangeKey.newKey] as? [AnyObject] {
+                // let timeRanges = change?[NSKeyValueChangeKey.newKey] as! [AnyObject]
+                if (timeRanges.count > 0) {
+                    let timerange:CMTimeRange   = timeRanges[0].timeRangeValue
+                    let smartValue: CGFloat     = CGFloat(CMTimeGetSeconds(CMTimeAdd(timerange.start, timerange.duration)))
+                    let duration: CGFloat       = CGFloat(CMTimeGetSeconds(self.queuePlayer.currentTime()))
+                    
+                    if ((smartValue - duration > 5.0 || (smartValue == duration))) {
+                        self.delegate!.bufferingFinsihed()
+                        if (isAutoPlay) {
+                            self.rate = self.previousRate
+                        }
                     }
                 }
+                
             }
             
         }
-        else if keyPath == #keyPath(AVPlayer.currentItem) {
-            guard let player = queuePlayer else { return }
+        else if keyPath == #keyPath(currentItem) {
+            //guard let player = queuePlayer else { return }
             
-            if queuePlayer?.rate == -1.0 {
+            if queuePlayer.rate == -1.0 {
                 return
             }
             
-            if player.items().isEmpty {
+            if queuePlayer.items().isEmpty {
                 print("Play queue emptied out due to bad player item. End looping")
-                 removeObservers()
-                 cleanUp()
-                 initPlayer(urlString: "")
-                self.delegate!.playerFrameRateChanged(frameRate: 0)
-
             }
             else {
                 // If `loopCount` has been set, check if looping needs to stop.
-               /* if numberOfTimesToPlay > 0 {
-                    numberOfTimesPlayed = numberOfTimesPlayed + 1
-                    
-                    if numberOfTimesPlayed >= numberOfTimesToPlay {
-                        print("Looped \(numberOfTimesToPlay) times. Stopping.");
-                        stop()
-                    }
-                }*/
+                /* if numberOfTimesToPlay > 0 {
+                 numberOfTimesPlayed = numberOfTimesPlayed + 1
+                 
+                 if numberOfTimesPlayed >= numberOfTimesToPlay {
+                 print("Looped \(numberOfTimesToPlay) times. Stopping.");
+                 stop()
+                 }
+                 }*/
                 
                 /*
                  Append the previous current item to the player's queue. An initial
@@ -553,17 +534,17 @@ private var playerViewControllerKVOContext  = 0
                     itemRemoved.seek(to: kCMTimeZero)
                     removeObservers()
                     cleanUp()
-                    queuePlayer?.insert(itemRemoved, after: nil)
+                    queuePlayer.insert(itemRemoved, after: nil)
                     addObservers()
                 }
             }
         }
-
+            
         else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
     }
-
+    
     public func playPause() {
         isAutoPlay = false
         if (isPlaying) {
@@ -574,11 +555,11 @@ private var playerViewControllerKVOContext  = 0
     }
     
     public func play() {
-        queuePlayer?.play()
+        queuePlayer.play()
     }
     
     public func pause() {
-        queuePlayer?.pause()
+        queuePlayer.pause()
     }
     
     // TODO: For |reversePlayback| and |fastForwardPlayback| put check canPlayFastForward, canPlaySlowForward, canPlayReverse etc... and make a single method
@@ -586,7 +567,7 @@ private var playerViewControllerKVOContext  = 0
         // Rewind no faster than -4.0.
         var playerRate = max(rate - 1, -4.0)
         if (playerRate == 0) {
-          playerRate = -1.0
+            playerRate = -1.0
         }
         playFromRate(playerRate: playerRate)
     }
@@ -606,7 +587,7 @@ private var playerViewControllerKVOContext  = 0
             rate = playerRate
         }
     }
-
+    
     
     /*
      * |numberOfFrame| +ve value means move forward and -ve backwoard
@@ -619,7 +600,7 @@ private var playerViewControllerKVOContext  = 0
         self.currentTime        += Double(secondsFromFrame)
         //currentItem?.step(byCount: numberOfFrame) //Its working for downloaded assets
     }
-
+    
     
     public func stepSeconds(byCount numberOfSecond:Int64) {
         isAutoPlay = false
@@ -628,17 +609,9 @@ private var playerViewControllerKVOContext  = 0
         self.currentTime += Double(numberOfSecond)
     }
     
-    // MARK: - Time utility methods
-
-    public func getTimeString(time: Float) -> String {
-        let components      = NSDateComponents()
-        components.second   = Int(max(0.0, time))
-        
-        return timeRemainingFormatter.string(from: components as DateComponents)!
-    }
-
+   
     public func getTimeCodeFromSeonds(time: Float) -> String {
-    
+        
         let sec             = Int(time) % 60
         let min             = (Int(time)/60) % 60
         let hours           = (Int(time)/3600) % 60
@@ -647,27 +620,133 @@ private var playerViewControllerKVOContext  = 0
         let frame           = fmodf(Float(currentTimeF.value), Float(frameRate))
         return String(format: "%02d:%02d:%02d:%02d", hours, min, sec, Int(frame))
     }
-  
     
     //****************************************************
     // MARK: - AVAssetResourceLoaderDelegate methods
     //****************************************************
- 
+    
     // FPS Key Fetch for Persistent Keys
-    public func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource
-        loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        print("shouldWaitForLoadingOfRequestedResource called...")
-
-       /* if loadingRequest.request.url?.scheme == "skd" {
-            let persistentContentKeyContext = Data(contentsOf: keySaveLocation)!
-            loadingRequest.contentInformationRequest!.contentType = AVStreamingKeyDeliveryPersistentContentKeyType
+    public func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool
+    {
+        let scheme = (loadingRequest.request.url?.scheme)! as NSString
+        if ((scheme.range(of: CUSTOM_SCHEME).location != NSNotFound))
+        {
+            let customUrl:NSString? = loadingRequest.request.url?.absoluteString as NSString?
+            let urlString = customUrl?.replacingOccurrences(of: CUSTOM_SCHEME, with: "http") as NSString?
+            let playlistUrl: NSString? = (NSURL(string: urlString as! String))?.absoluteString as NSString?
+            print("PlaylistUrl:\(playlistUrl)")
             
-            loadingRequest.dataRequest!.respond(with: persistentContentKeyContext)
-            loadingRequest.finishLoading()
+            NetworkManager().startAsyncDownload(playlistUrl as String!, progress: { (CGFloat) in
+                
+                }, finished: { (response, errorCode) in
+                    // if (errorCode == TRACE_CODE_SUCCESS)
+                    if (errorCode == 0)
+                    {
+                        if (playlistUrl?.range(of: ".ckf").location != NSNotFound) {
+                            print("Assest Loader Called........")
+                            
+//                            let strKey = CMServicesUtilities.getStreamDecryptionKey()
+//                            let responseData = response as! NSData
+//                            let decryptedKey: NSData = responseData.decryptData(withKey: strKey, mode: true) as NSData
+//                            loadingRequest.dataRequest?.respond(with: decryptedKey as Data)
+//                            loadingRequest.finishLoading()
+                        }
+                        else
+                        {
+                            let urlComponents:NSURLComponents = NSURLComponents(url: URL.init(string: playlistUrl as! String)!, resolvingAgainstBaseURL: false)!
+                            
+                            urlComponents.query = nil
+                            var baseURL = urlComponents.url?.deletingLastPathComponent().absoluteString
+                            let m3u8Str =  NSString(data: response as! Data, encoding: String.Encoding.utf8.rawValue)!
+                            if (m3u8Str.range(of: ".m3u8").location != NSNotFound)
+                            {
+                                let subReplace = "(\"[a-z0-9/:=~._-]*(\\.m3u8))"
+                                // var error:NSError? = nil
+                                do
+                                {
+                                    
+                                    let regex: NSRegularExpression = try NSRegularExpression(pattern: subReplace, options:NSRegularExpression.Options.caseInsensitive)
+                                    regex.replaceMatches(in: m3u8Str as! NSMutableString, options: NSRegularExpression.MatchingOptions.init(rawValue: 0), range: NSMakeRange(0, m3u8Str.length), withTemplate:"\"\(baseURL)^$1^\"")
+                                    
+                                    m3u8Str.replacingOccurrences(of:"^\"", with:"")
+                                   // CMCache.setObject(m3u8Str.data(using: String.Encoding.utf8.rawValue), forKey: playlistUrl?.md5(), withNewPath: "cache_m3u8")
+                                    
+                                }
+                                catch {
+                                    print("problem in REG X")
+                                }
+                            }
+                            else
+                            {
+                                let tsReplace = "([a-z0-9/:~._-]*(\\.ts))"
+                                
+                                if (m3u8Str.range(of: "http").location == NSNotFound)
+                                {
+                                    do
+                                    {
+                                        let regex: NSRegularExpression = try NSRegularExpression(pattern: tsReplace, options:NSRegularExpression.Options.caseInsensitive)
+                                        regex.replaceMatches(in: m3u8Str as! NSMutableString, options: NSRegularExpression.MatchingOptions.init(rawValue: 0), range: NSMakeRange(0, m3u8Str.length), withTemplate:"\(baseURL)$1")
+                                    }
+                                    catch {
+                                        print("problem in Segments")
+                                    }
+                                    
+                                    if (m3u8Str.range(of:"key").location == NSNotFound)
+                                    {
+                                        let ckfReplace = "([a-z0-9/:~._-]*\\.ckf)"
+                                        urlComponents.scheme = urlComponents.scheme?.replacingOccurrences(of: "http", with: self.CUSTOM_SCHEME)
+                                        do
+                                        {
+                                            let regX = try NSRegularExpression(pattern: ckfReplace, options:NSRegularExpression.Options.caseInsensitive)
+                                            
+                                            baseURL = urlComponents.url?.deletingLastPathComponent().absoluteString
+                                            regX.replaceMatches(in: m3u8Str as! NSMutableString, options: NSRegularExpression.MatchingOptions.init(rawValue: 0), range: NSMakeRange(0, m3u8Str.length), withTemplate:"\(baseURL)$1")
+                                        }
+                                        catch {
+                                            print("problem in Segments")
+                                        }
+                                    }
+                                    else {
+                                        m3u8Str.replacingOccurrences(of:"key", with:self.CUSTOM_SCHEME)
+                                    }
+                                }
+                                else {
+                                    m3u8Str.replacingOccurrences(of:"key", with:self.CUSTOM_SCHEME)
+                                }
+                            }
+                            print("m3u8Str....\(m3u8Str)")
+                            //For Live Asset Check for ENDLIST flag
+                            //
+                            //                                                            if ([self.delegate respondsToSelector:@selector(isLiveAssetGrowingProxy:)])
+                            //                                                            {
+                            //                                                                if([m3u8Str rangeOfString:@"EXT-X-ENDLIST"].location != NSNotFound) {
+                            //                                                                    [_delegate isLiveAssetGrowingProxy:NO];
+                            //                                                                }
+                            //                                                            }
+                            let data = m3u8Str.data(using: String.Encoding.utf8.rawValue)
+                            loadingRequest.dataRequest?.respond(with: data!)
+                            loadingRequest.finishLoading()
+                        }
+                    }
+                    else {
+                        print("error in key response\(response)");
+                    }
+            })
             return true
         }
-        return false*/
+        return false
+    }
+    
+    
+    public func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForResponseTo authenticationChallenge: URLAuthenticationChallenge) -> Bool {
+        let protectionSpace = authenticationChallenge.protectionSpace
+        
+        if protectionSpace.authenticationMethod ==  NSURLAuthenticationMethodServerTrust {
+            
+            authenticationChallenge.sender?.use(URLCredential.init(trust: authenticationChallenge.protectionSpace.serverTrust!), for: authenticationChallenge)
+            authenticationChallenge.sender?.continueWithoutCredential(for: authenticationChallenge)
+            
+        }
         return true
     }
- 
 }

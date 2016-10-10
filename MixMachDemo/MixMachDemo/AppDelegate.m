@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import <AVFoundation/AVFoundation.h>
+#import <AudioToolbox/AudioToolbox.h>
 
 @interface AppDelegate ()
 
@@ -16,7 +18,31 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+   /* let audioSession = AVAudioSession.sharedInstance()
+    
+    do {
+        
+        try audioSession.setCategory(AVAudioSessionCategoryPlayback)
+        
+    } catch {
+        
+        print("Setting category to AVAudioSessionCategoryPlayback failed.")
+        
+    }
+    */
+    // Set AudioSession
+    NSError *sessionError = nil;
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&sessionError];
+//    /* Pick any one of them */
+//    // 1. Overriding the output audio route
+//    //UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+//    //AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(audioRouteOverride), &audioRouteOverride);
+//    
+//    // 2. Changing the default output audio route
+//    UInt32 doChangeDefaultRoute = 1;
+//    AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryDefaultToSpeaker, sizeof(doChangeDefaultRoute), &doChangeDefaultRoute);
+    
+    
     return YES;
 }
 

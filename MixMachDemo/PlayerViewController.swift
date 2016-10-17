@@ -102,8 +102,10 @@ private var playerViewControllerKVOContext  = 0
             return CMTimeGetSeconds(queuePlayer.currentTime())
         }
         set {
+            //print("newValue:\(newValue)")
             let newTime = CMTimeMakeWithSeconds(newValue, Int32(frameRate))
             queuePlayer.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
+                //print("1---newValue:\(newValue)")
             })
         }
     }
@@ -146,7 +148,7 @@ private var playerViewControllerKVOContext  = 0
         let interval        = CMTimeMakeWithSeconds(Float64(frame), Int32(NSEC_PER_SEC))
         timeObserverToken   = queuePlayer.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [unowned self] time in
             let timeElapsed  = Double(CMTimeGetSeconds((self.currentItem?.currentTime())!))
-            // print("timeElapsed:\(timeElapsed)")
+             print("timeElapsed:\(timeElapsed)")
             self.delegate!.playerTimeUpdate(time:timeElapsed)
         }
     }
@@ -237,6 +239,7 @@ private var playerViewControllerKVOContext  = 0
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name:NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         //addObservers()
         showWaterMark()
+        //setUpWaterMarkLayer()
         setupPlayerPeriodicTimeObserver()
     }
     
@@ -378,11 +381,11 @@ private var playerViewControllerKVOContext  = 0
         // MARK: - m3u8 urls
         // let urlString = Bundle.main.path(forResource: "bipbopall", ofType: "m3u8")!
         
-        //var urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
+      //  urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
         //  var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
-        //var urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-        urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
-        //let urlString = "https://devimages.apple.com.edgekey.net/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8" //(Reverse playback)
+         //urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+        //urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
+          urlString = "https://devimages.apple.com.edgekey.net/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8" //(Reverse playback)
         //let urlString = "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8" //(4K)
         //let urlString = "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch3/appleman.m3u8" //((LIVE TV)
         //var urlString  = "http://cdn-fms.rbs.com.br/vod/hls_sample1_manifest.m3u8"
@@ -413,7 +416,7 @@ private var playerViewControllerKVOContext  = 0
         
         queuePlayer = AVQueuePlayer()
         mediaPlayer.player = queuePlayer
-       // mediaPlayer.showsPlaybackControls = true
+      //  mediaPlayer.showsPlaybackControls = true
 
         addObservers()
         
@@ -426,6 +429,40 @@ private var playerViewControllerKVOContext  = 0
         
     }
     
+  //  var waterMarklayer: CALayer
+
+    
+    func setUpWaterMarkLayer() {
+        /*var waterMarklayer: CALayer = CALayer()
+        waterMarklayer.backgroundColor = UIColor.blue.cgColor
+        waterMarklayer.borderWidth = 100.0
+        waterMarklayer.borderColor = UIColor.red.cgColor
+        waterMarklayer.shadowOpacity = 0.7
+        waterMarklayer.shadowRadius = 10.0*/
+        
+        let titleLayer = CATextLayer()
+        titleLayer.backgroundColor = UIColor.clear.cgColor
+        titleLayer.string = "Watermark Layer"
+       
+        titleLayer.frame = CGRect.init(x: 200, y: 100, width: mediaPlayer.videoBounds.width/3, height: mediaPlayer.videoBounds.height / 6)
+        titleLayer.fontSize = 28
+        titleLayer.shadowOpacity = 0.5
+        
+        mediaPlayer.view.layer.addSublayer(titleLayer)
+
+        // create text Layer
+       /* CATextLayer* titleLayer = [CATextLayer layer];
+        titleLayer.backgroundColor = [UIColor clearColor].CGColor;
+        titleLayer.string = @"Dummy text";
+        titleLayer.font = CFBridgingRetain(@"Helvetica");
+        titleLayer.fontSize = 28;
+        titleLayer.shadowOpacity = 0.5;
+        titleLayer.alignmentMode = kCAAlignmentCenter;
+        titleLayer.frame = CGRectMake(0, 50, videoSize.width, videoSize.height / 6);
+        [parentLayer addSublayer:titleLayer];*/
+        
+    }
+    
     func configurePlayer() {
         // if I change m3u8 to different file extension, it's working good
         let url = NSURL(string: "cplp://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8")
@@ -434,7 +471,7 @@ private var playerViewControllerKVOContext  = 0
         asset.resourceLoader.setDelegate(self, queue:DispatchQueue.main)
         
         let playerItem = AVPlayerItem(asset: asset)
-        mediaPlayer.player = AVPlayer(playerItem: playerItem) // <-- the fix
+        mediaPlayer.player = AVPlayer(playerItem: playerItem)
         mediaPlayer.player?.play()
     }
     
@@ -628,8 +665,8 @@ private var playerViewControllerKVOContext  = 0
         self.pause()
         currentItem?.cancelPendingSeeks()
         let secondsFromFrame    = Float(numberOfFrame)/frameRate
-        self.currentTime        += Double(secondsFromFrame)
-        //currentItem?.step(byCount: numberOfFrame) //Its working for downloaded assets
+       // self.currentTime        += Double(secondsFromFrame)
+        currentItem?.step(byCount: numberOfFrame) //Its working for mp4 and local assets
     }
     
     

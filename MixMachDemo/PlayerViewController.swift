@@ -166,12 +166,12 @@ private var playerViewControllerKVOContext  = 0
 
     public func configureAirplay() {
         print("configureAirplay...")
-        mediaPlayer.player?.usesExternalPlaybackWhileExternalScreenIsActive = true
-        mediaPlayer.player?.allowsExternalPlayback = true
-//       let volumeView = MPVolumeView()
-//        volumeView.showsVolumeSlider = false
-//        volumeView.sizeToFit()
-//        mediaPlayer.view.addSubview(volumeView)
+       // queuePlayer.allowsExternalPlayback = true
+       // queuePlayer.usesExternalPlaybackWhileExternalScreenIsActive = true
+       let volumeView = MPVolumeView()
+        volumeView.showsVolumeSlider = false
+        volumeView.sizeToFit()
+        mediaPlayer.view.addSubview(volumeView)
     }
     
     private func cleanUpPlayerPeriodicTimeObserver() {
@@ -371,21 +371,21 @@ private var playerViewControllerKVOContext  = 0
     
     public func initPlayer(urlString: String) {
         
-        var urlString = urlString
+       // var urlString = urlString
         ///////////Demo Urls//////////////////////////////////////
-        ///var urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
+        var urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
         //var urlString   = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
-        //let localURL    = true
-        let localURL    = false
+        let localURL    = true
+        //let localURL    = false
         
         // MARK: - m3u8 urls
         // let urlString = Bundle.main.path(forResource: "bipbopall", ofType: "m3u8")!
         
       //  urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
         //  var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
-         //urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-        //urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
-          urlString = "https://devimages.apple.com.edgekey.net/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8" //(Reverse playback)
+      //var urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+       // urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
+        //let urlString = "https://devimages.apple.com.edgekey.net/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8" //(Reverse playback)
         //let urlString = "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8" //(4K)
         //let urlString = "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch3/appleman.m3u8" //((LIVE TV)
         //var urlString  = "http://cdn-fms.rbs.com.br/vod/hls_sample1_manifest.m3u8"
@@ -416,7 +416,9 @@ private var playerViewControllerKVOContext  = 0
         
         queuePlayer = AVQueuePlayer()
         mediaPlayer.player = queuePlayer
-      //  mediaPlayer.showsPlaybackControls = true
+        //mediaPlayer.showsPlaybackControls = true
+        configureAirplay()
+
 
         addObservers()
         
@@ -425,8 +427,6 @@ private var playerViewControllerKVOContext  = 0
         //let playerItem = AVPlayerItem(asset: urlAsset)
         // mediaPlayer.player = AVPlayer(playerItem: playerItem)
         asynchronouslyLoadURLAsset(urlAsset)
-        configureAirplay()
-        
     }
     
   //  var waterMarklayer: CALayer

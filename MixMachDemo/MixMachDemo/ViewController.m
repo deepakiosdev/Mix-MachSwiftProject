@@ -18,11 +18,16 @@
 @property (weak, nonatomic) IBOutlet UIButton *playPauseButton;
 @property (weak, nonatomic) IBOutlet UILabel *currentTime;
 @property (weak, nonatomic) IBOutlet UILabel *duration;
-
+@property (weak, nonatomic) IBOutlet UIView *playerContainerSuperView;
+@property (weak, nonatomic) IBOutlet UIView *playerContainerView;
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 @property (nonatomic, strong) PlayerViewController *playerVC;
 @property (weak, nonatomic) IBOutlet UIView *controlsView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
+
+@property (nonatomic, strong)   UIWindow                     *externalWindow;
+@property (nonatomic, strong)   UIScreen                     *externalScreen;
+
 @end
 
 @implementation ViewController
@@ -35,6 +40,20 @@
     _currentTime.text           = @"00:00:00:00";
     _duration.text              = @"00:00:00:00";
     [_controlsView setUserInteractionEnabled:NO];
+}
+
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidConnect:) name:UIScreenDidConnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidDisconnect:) name:UIScreenDidDisconnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(exteralScreenModeDidChange:) name:UIScreenModeDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidDisconnect:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidDisconnect:) name:UIApplicationWillTerminateNotification object:nil];
+    
+    [self setupExternalScreen];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -50,6 +69,22 @@
     [self addChildViewController:_playerVC.mediaPlayer];
     [self.view addSubview:_playerVC.mediaPlayer.view];
     _playerVC.mediaPlayer.view.frame = _containerView.frame;*/
+}
+
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [self externalScreenDidDisconnect:nil];
+    [super viewWillDisappear:animated];
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenDidConnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenDidDisconnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenModeDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillTerminateNotification object:nil];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -157,5 +192,95 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+- (void)setupExternalScreen
+{
+    // Setup screen mirroring for an existing screen
+    NSArray *connectedScreens = [UIScreen screens];
+    NSLog(@"connectedScreens count:%lu: ",(unsigned long)connectedScreens.count);
+    if ([connectedScreens count] > 1)
+    {
+        UIScreen *mainScreen = [UIScreen mainScreen];
+        for (UIScreen *aScreen in connectedScreens)
+        {
+            if (aScreen != mainScreen)
+            {
+                [self configureExternalScreen:aScreen];
+                break;
+            }
+        }
+    }
+}
+
+
+-(void)configureExternalScreen:(UIScreen *)externalScreen
+{
+    NSLog(@"configureExternalScreen....");
+    
+    self.externalScreen = externalScreen;
+   // self.connectedLabel.hidden = NO;
+    // NSLog(@"1......._externalWindow:%@",_externalWindow);
+    if(!_externalWindow) {
+        _externalWindow = [[UIWindow alloc] initWithFrame:[self.externalScreen bounds]];
+    }
+    [_externalWindow setHidden:NO];
+    
+    [[_externalWindow layer] setContentsGravity:kCAGravityResizeAspect];
+    [_externalWindow setScreen:self.externalScreen];
+    [[_externalWindow screen] setOverscanCompensation:UIScreenOverscanCompensationScale];
+    
+    [_containerView setFrame:[_externalWindow bounds]];
+    [_externalWindow addSubview:_containerView];
+    
+    [_containerView updateConstraintsIfNeeded];
+    [_containerView setNeedsLayout];
+    [_containerView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    for(NSLayoutConstraint *c in _playerContainerView.constraints)
+    {
+        if(c.firstItem == _containerView || c.secondItem == _containerView) {
+            [_playerContainerView removeConstraint:c];
+        }
+    }
+    
+    [_externalWindow makeKeyAndVisible];
+    
+    //NSLog(@"2.......screen:%@",_externalWindow.screen);
+    // NSLog(@"2......._externalWindow:%@",_externalWindow);
+    //NSLog(@"subviews.count:%lu \n_externalWindow.subviews:%@",(unsigned long)_externalWindow.subviews.count, _externalWindow.subviews);
+    //  NSLog(@"keyWindow:%@",[[UIApplication sharedApplication] keyWindow]);
+    // NSLog(@"windows:%@",[[UIApplication sharedApplication] windows]);
+    
+}
+
+-(void)externalScreenDidConnect:(NSNotification*)notification
+{
+    UIScreen *externalScreen = [notification object];
+    [self configureExternalScreen:externalScreen];
+}
+
+-(void)externalScreenDidDisconnect:(NSNotification*)notification
+{
+    NSLog(@"externalScreenDidDisconnect....");
+   // self.connectedLabel.hidden = YES;
+    [_containerView setFrame:[_playerContainerView bounds]];
+    [_playerContainerView addSubview:_containerView];
+    
+    [_containerView updateConstraintsIfNeeded];
+    [_containerView setNeedsLayout];
+    [_containerView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    
+    if(_externalWindow)
+    {
+        self.externalScreen = nil;
+        [_externalWindow setHidden:YES];
+        [_externalWindow resignKeyWindow];
+    }
+    _externalWindow = nil;
+    
+}
+
+-(void)exteralScreenModeDidChange:(NSNotification*)notification
+{
+}
 
 @end

@@ -223,7 +223,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "644"
             endingLineNumber = "644"
-            landmarkName = "playForward()"
+            landmarkName = "playReverse()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -271,7 +271,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "674"
             endingLineNumber = "674"
-            landmarkName = "stepSeconds(byCount:)"
+            landmarkName = "stepFrames(byCount:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -479,8 +479,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "696"
             endingLineNumber = "696"
-            landmarkName = "PlayerViewController"
-            landmarkType = "3">
+            landmarkName = "getTimeCodeFromSeonds(time:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -543,8 +543,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "688"
             endingLineNumber = "688"
-            landmarkName = "getTimeCodeFromSeonds(time:)"
-            landmarkType = "7">
+            landmarkName = "PlayerViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -607,7 +607,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "685"
             endingLineNumber = "685"
-            landmarkName = "getTimeCodeFromSeonds(time:)"
+            landmarkName = "stepSeconds(byCount:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

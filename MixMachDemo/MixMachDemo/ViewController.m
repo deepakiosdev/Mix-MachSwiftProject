@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 #import "MixMachDemo-Swift.h"
+#import <AVKit/AVKit.h>
+
 
 @class PlayerViewController;
 
@@ -24,6 +26,7 @@
 @property (nonatomic, strong) PlayerViewController *playerVC;
 @property (weak, nonatomic) IBOutlet UIView *controlsView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
+@property (weak, nonatomic) IBOutlet UIImageView *airPlayThumbnail;
 
 @property (nonatomic, strong)   UIWindow                     *externalWindow;
 @property (nonatomic, strong)   UIScreen                     *externalScreen;
@@ -52,14 +55,17 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(exteralScreenModeDidChange:) name:UIScreenModeDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidDisconnect:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidDisconnect:) name:UIApplicationWillTerminateNotification object:nil];
-    
-    [self setupExternalScreen];
+   
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
 
+    if (_playerVC.isPlayerInitilaized) {
+        [self setupExternalScreen];
+    }
+    
    /* _playerVC = [PlayerViewController new];
     NSString *url = @"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
     AVPlayerViewController *playerVC = [self.storyboard instantiateViewControllerWithIdentifier:@"PlayerViewController"];
@@ -212,38 +218,84 @@
     }
 }
 
+- (void)listSubviewsOfView:(UIView *)view {
+    
+    // Get the subviews of the view
+    NSArray *subviews = [view subviews];
+    
+    // Return if there are no subviews
+    if ([subviews count] == 0) return; // COUNT CHECK LINE
+    
+    for (UIView *subview in subviews) {
+        
+        // Do what you want to do with the subview
+        NSLog(@"++++++++view:%@",subview);
+        if ([subview isKindOfClass:[UILabel class]] || [subview isKindOfClass:[UIView class]] || [subview isKindOfClass:[UIImageView class]] || [subview isKindOfClass:[UIButton class]] || [subview isKindOfClass:[UIView class]] || [subview isKindOfClass:[UIView class]]) {
+            subview.hidden = YES;
+        }
+        
+        // List the subviews of subview
+        [self listSubviewsOfView:subview];
+    }
+}
 
 -(void)configureExternalScreen:(UIScreen *)externalScreen
 {
     NSLog(@"configureExternalScreen....");
     
     self.externalScreen = externalScreen;
-   // self.connectedLabel.hidden = NO;
+    
+//    for (UIWindow *window in [UIApplication sharedApplication].windows) {
+//        NSLog(@"============window:%@",window);
+//        for (UIView *view in window.subviews) {
+//            [self listSubviewsOfView:view];
+//        }
+//    }
+    
+    for (UIScreen *aScreen in UIScreen.screens)
+    {
+        NSLog(@"----------Screen:%@",aScreen);
+    }
+    
+    //UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
+    
+    //_airPlayThumbnail.hidden = NO;
     // NSLog(@"1......._externalWindow:%@",_externalWindow);
     if(!_externalWindow) {
         _externalWindow = [[UIWindow alloc] initWithFrame:[self.externalScreen bounds]];
     }
+    //_externalWindow = window;
+    
     [_externalWindow setHidden:NO];
     
     [[_externalWindow layer] setContentsGravity:kCAGravityResizeAspect];
     [_externalWindow setScreen:self.externalScreen];
     [[_externalWindow screen] setOverscanCompensation:UIScreenOverscanCompensationScale];
+    [_externalWindow makeKeyAndVisible];
+
+
+    [_playerContainerView setFrame:[_externalWindow bounds]];
+ 
     
-    [_containerView setFrame:[_externalWindow bounds]];
-    [_externalWindow addSubview:_containerView];
+    //[self listSubviewsOfView:_playerContainerView];
+
+    [_externalWindow addSubview:_playerContainerView];
     
-    [_containerView updateConstraintsIfNeeded];
-    [_containerView setNeedsLayout];
-    [_containerView setTranslatesAutoresizingMaskIntoConstraints:YES];
-    for(NSLayoutConstraint *c in _playerContainerView.constraints)
+    [_playerContainerView updateConstraintsIfNeeded];
+    [_playerContainerView setNeedsLayout];
+    [_playerContainerView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    
+    for(NSLayoutConstraint *c in _playerContainerSuperView.constraints)
     {
-        if(c.firstItem == _containerView || c.secondItem == _containerView) {
-            [_playerContainerView removeConstraint:c];
+        if(c.firstItem == _playerContainerView || c.secondItem == _playerContainerView) {
+            [_playerContainerSuperView removeConstraint:c];
         }
     }
     
     [_externalWindow makeKeyAndVisible];
     
+    [self checkOverlayCountsAfterDelay];
+
     //NSLog(@"2.......screen:%@",_externalWindow.screen);
     // NSLog(@"2......._externalWindow:%@",_externalWindow);
     //NSLog(@"subviews.count:%lu \n_externalWindow.subviews:%@",(unsigned long)_externalWindow.subviews.count, _externalWindow.subviews);
@@ -254,20 +306,29 @@
 
 -(void)externalScreenDidConnect:(NSNotification*)notification
 {
+    [self checkOverlayCountsAfterDelay];
     UIScreen *externalScreen = [notification object];
     [self configureExternalScreen:externalScreen];
 }
 
+- (void)checkOverlayCountsAfterDelay {
+    [self performSelector:@selector(checkOverlayCounts) withObject:nil afterDelay:2.0];
+}
+
+- (void)checkOverlayCounts {
+    [_playerVC showWaterMark];
+
+}
 -(void)externalScreenDidDisconnect:(NSNotification*)notification
 {
     NSLog(@"externalScreenDidDisconnect....");
-   // self.connectedLabel.hidden = YES;
-    [_containerView setFrame:[_playerContainerView bounds]];
-    [_playerContainerView addSubview:_containerView];
+    //_airPlayThumbnail.hidden = YES;
+    [_playerContainerView setFrame:[_playerContainerSuperView bounds]];
+    [_playerContainerSuperView addSubview:_playerContainerView];
     
-    [_containerView updateConstraintsIfNeeded];
-    [_containerView setNeedsLayout];
-    [_containerView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [_playerContainerView updateConstraintsIfNeeded];
+    [_playerContainerView setNeedsLayout];
+    [_playerContainerView setTranslatesAutoresizingMaskIntoConstraints:YES];
     
     if(_externalWindow)
     {

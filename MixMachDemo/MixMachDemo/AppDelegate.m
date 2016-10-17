@@ -31,8 +31,8 @@
     }
     */
     // Set AudioSession
-    NSError *sessionError = nil;
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&sessionError];
+    //NSError *sessionError = nil;
+   // [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&sessionError];
 //    /* Pick any one of them */
 //    // 1. Overriding the output audio route
 //    //UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;

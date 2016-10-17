@@ -152,8 +152,11 @@ private var playerViewControllerKVOContext  = 0
             self.delegate!.playerTimeUpdate(time:timeElapsed)
         }
     }
+    
+
     public func showWaterMark() {
         
+        print("Subviews Count:\(mediaPlayer.contentOverlayView?.subviews.count)\n Subviews:\(mediaPlayer.contentOverlayView?.subviews)")
         if mediaPlayer.contentOverlayView?.subviews.count == 0 {
             let label   = UILabel()
             label.text  = "SWift Player"
@@ -166,12 +169,15 @@ private var playerViewControllerKVOContext  = 0
 
     public func configureAirplay() {
         print("configureAirplay...")
-       // queuePlayer.allowsExternalPlayback = true
-       // queuePlayer.usesExternalPlaybackWhileExternalScreenIsActive = true
-       let volumeView = MPVolumeView()
-        volumeView.showsVolumeSlider = false
-        volumeView.sizeToFit()
-        mediaPlayer.view.addSubview(volumeView)
+        mediaPlayer.showsPlaybackControls = false
+       mediaPlayer.player?.allowsExternalPlayback = false
+       mediaPlayer.player?.usesExternalPlaybackWhileExternalScreenIsActive = false
+        queuePlayer.allowsExternalPlayback = false
+        queuePlayer.usesExternalPlaybackWhileExternalScreenIsActive = false
+//        let volumeView = MPVolumeView()
+//        volumeView.showsVolumeSlider = false
+//        volumeView.sizeToFit()
+//        mediaPlayer.view.addSubview(volumeView)
     }
     
     private func cleanUpPlayerPeriodicTimeObserver() {
@@ -416,10 +422,7 @@ private var playerViewControllerKVOContext  = 0
         
         queuePlayer = AVQueuePlayer()
         mediaPlayer.player = queuePlayer
-        //mediaPlayer.showsPlaybackControls = true
         configureAirplay()
-
-
         addObservers()
         
         let urlAsset    = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
@@ -687,6 +690,10 @@ private var playerViewControllerKVOContext  = 0
         let currentTimeF    = CMTimeConvertScale(currentTime, Int32(frameRate), CMTimeRoundingMethod.default)
         let frame           = fmodf(Float(currentTimeF.value), Float(frameRate))
         return String(format: "%02d:%02d:%02d:%02d", hours, min, sec, Int(frame))
+    }
+    
+    public func getPlayerView ()-> UIView {
+        return mediaPlayer.view
     }
     
     //****************************************************

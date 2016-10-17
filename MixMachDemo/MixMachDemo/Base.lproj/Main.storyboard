@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -14,11 +15,45 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xDX-zA-YKg">
-                                <frame key="frameInset" height="180"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fC8-oo-Z35">
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KSE-NU-DAQ">
+                                        <subviews>
+                                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="iDR-Si-cBO">
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="37" id="3YD-Ww-nKu"/>
+                                                    <constraint firstAttribute="width" constant="37" id="5Ol-Tk-Shn"/>
+                                                </constraints>
+                                            </activityIndicatorView>
+                                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gkb-ZD-qB1">
+                                                <connections>
+                                                    <segue destination="6lV-pn-cSn" kind="embed" identifier="PlayerViewController" id="zSk-WV-jD7"/>
+                                                </connections>
+                                            </containerView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstItem="iDR-Si-cBO" firstAttribute="centerY" secondItem="KSE-NU-DAQ" secondAttribute="centerY" id="CWm-Y3-47a"/>
+                                            <constraint firstItem="iDR-Si-cBO" firstAttribute="centerX" secondItem="KSE-NU-DAQ" secondAttribute="centerX" id="EnY-xg-Xrf"/>
+                                            <constraint firstAttribute="bottom" secondItem="gkb-ZD-qB1" secondAttribute="bottom" id="bN4-Vc-SAc"/>
+                                            <constraint firstAttribute="trailing" secondItem="gkb-ZD-qB1" secondAttribute="trailing" id="nna-7D-Tdw"/>
+                                            <constraint firstItem="gkb-ZD-qB1" firstAttribute="leading" secondItem="KSE-NU-DAQ" secondAttribute="leading" id="try-0P-7mP"/>
+                                            <constraint firstItem="gkb-ZD-qB1" firstAttribute="top" secondItem="KSE-NU-DAQ" secondAttribute="top" id="xg2-in-PUf"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" red="0.24483153220000001" green="1" blue="0.26742392780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstItem="KSE-NU-DAQ" firstAttribute="leading" secondItem="fC8-oo-Z35" secondAttribute="leading" id="afK-JD-Rjd"/>
+                                    <constraint firstAttribute="trailing" secondItem="KSE-NU-DAQ" secondAttribute="trailing" id="iEF-r1-deD"/>
+                                    <constraint firstItem="KSE-NU-DAQ" firstAttribute="top" secondItem="fC8-oo-Z35" secondAttribute="top" id="iUb-es-pcj"/>
+                                    <constraint firstAttribute="bottom" secondItem="KSE-NU-DAQ" secondAttribute="bottom" id="m1c-Yu-PwI"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xDX-zA-YKg">
                                 <subviews>
                                     <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mLv-7h-dip">
                                         <constraints>
@@ -27,7 +62,7 @@
                                         <items>
                                             <barButtonItem style="plain" id="xPl-tA-F1l">
                                                 <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wyh-Yh-CUs">
-                                                    <rect key="frame" x="16" y="11" width="30" height="22"/>
+                                                    <rect key="frame" x="20" y="11" width="30" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" image="PlayButton"/>
                                                     <state key="selected" image="PauseButton"/>
@@ -38,7 +73,7 @@
                                             </barButtonItem>
                                             <barButtonItem title="Item" style="plain" id="MXm-RO-85W">
                                                 <slider key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="BeF-be-MZ1">
-                                                    <rect key="frame" x="56" y="6.5" width="842" height="31"/>
+                                                    <rect key="frame" x="60" y="7" width="842" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                                     <connections>
                                                         <action selector="seekBarValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="1Yy-Bn-n9z"/>
@@ -47,7 +82,7 @@
                                             </barButtonItem>
                                             <barButtonItem style="plain" id="NQ4-Y8-Ph5">
                                                 <button key="customView" hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="oMR-Ds-53c">
-                                                    <rect key="frame" x="908" y="7" width="37" height="30"/>
+                                                    <rect key="frame" x="912" y="7" width="37" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal">
                                                         <color key="titleColor" red="1" green="0.23423837550000001" blue="0.91737058989999998" alpha="1" colorSpace="calibratedRGB"/>
@@ -56,7 +91,7 @@
                                             </barButtonItem>
                                             <barButtonItem style="plain" id="m3U-1N-0Hm">
                                                 <button key="customView" hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ETx-EO-spu">
-                                                    <rect key="frame" x="955" y="7" width="46" height="30"/>
+                                                    <rect key="frame" x="959" y="7" width="46" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <state key="selected" title="Pause"/>
@@ -168,38 +203,16 @@
                                     <constraint firstItem="mLv-7h-dip" firstAttribute="leading" secondItem="xDX-zA-YKg" secondAttribute="leading" id="weO-Ts-CcQ"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qhB-gC-hMU">
-                                <frame key="frameInset" width="415" height="527"/>
-                                <subviews>
-                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="iDR-Si-cBO">
-                                        <frame key="frameInset" minX="189" minY="335" width="37" height="37"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="37" id="3YD-Ww-nKu"/>
-                                            <constraint firstAttribute="width" constant="37" id="5Ol-Tk-Shn"/>
-                                        </constraints>
-                                    </activityIndicatorView>
-                                    <containerView opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gkb-ZD-qB1">
-                                        <frame key="frameInset" minX="20" minY="20" width="375" height="487"/>
-                                        <connections>
-                                            <segue destination="6lV-pn-cSn" kind="embed" identifier="PlayerViewController" id="zSk-WV-jD7"/>
-                                        </connections>
-                                    </containerView>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstItem="gkb-ZD-qB1" firstAttribute="leading" secondItem="qhB-gC-hMU" secondAttribute="leading" constant="20" id="Q4z-Ph-XC6"/>
-                                    <constraint firstItem="gkb-ZD-qB1" firstAttribute="top" secondItem="qhB-gC-hMU" secondAttribute="top" constant="20" id="il3-2d-AUV"/>
-                                    <constraint firstAttribute="trailing" secondItem="gkb-ZD-qB1" secondAttribute="trailing" constant="20" id="jyx-ly-yqp"/>
-                                    <constraint firstItem="iDR-Si-cBO" firstAttribute="centerX" secondItem="qhB-gC-hMU" secondAttribute="centerX" id="pjb-Jq-GCq"/>
-                                    <constraint firstItem="iDR-Si-cBO" firstAttribute="centerY" secondItem="qhB-gC-hMU" secondAttribute="centerY" constant="90" id="rV0-hB-L89"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="xDX-zA-YKg" secondAttribute="trailing" id="8Oo-U3-A83"/>
+                            <constraint firstItem="xDX-zA-YKg" firstAttribute="top" secondItem="fC8-oo-Z35" secondAttribute="bottom" id="Pox-aT-d1H"/>
                             <constraint firstItem="xDX-zA-YKg" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="TNc-CI-YnG"/>
+                            <constraint firstAttribute="trailing" secondItem="fC8-oo-Z35" secondAttribute="trailing" id="f0l-vu-kZw"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="xDX-zA-YKg" secondAttribute="bottom" id="oeq-wG-o5F"/>
+                            <constraint firstItem="fC8-oo-Z35" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="sdC-S6-cGK"/>
+                            <constraint firstItem="fC8-oo-Z35" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="x5j-F9-TCg"/>
                         </constraints>
                     </view>
                     <connections>
@@ -209,7 +222,8 @@
                         <outlet property="duration" destination="pKd-R2-51d" id="VQn-JB-wpR"/>
                         <outlet property="loadingIndicator" destination="iDR-Si-cBO" id="OQT-xb-fqy"/>
                         <outlet property="playPauseButton" destination="Wyh-Yh-CUs" id="HED-JT-JOk"/>
-                        <outlet property="playerContainerView" destination="qhB-gC-hMU" id="S07-h4-enz"/>
+                        <outlet property="playerContainerSuperView" destination="fC8-oo-Z35" id="SXd-Ge-cZJ"/>
+                        <outlet property="playerContainerView" destination="KSE-NU-DAQ" id="CkW-c1-ifR"/>
                         <outlet property="seekBar" destination="BeF-be-MZ1" id="UfS-wo-wib"/>
                         <outlet property="toolBar" destination="mLv-7h-dip" id="eUQ-qD-Zj9"/>
                     </connections>

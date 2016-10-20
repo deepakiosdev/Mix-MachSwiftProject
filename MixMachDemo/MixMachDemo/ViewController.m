@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "MixMachDemo-Swift.h"
+#import <AVFoundation/AVFoundation.h>
 
 @class PlayerViewController;
 
@@ -19,10 +20,13 @@
 @property (weak, nonatomic) IBOutlet UILabel *currentTime;
 @property (weak, nonatomic) IBOutlet UILabel *duration;
 
-@property (weak, nonatomic) IBOutlet UIView *containerView;
+@property (nonatomic, strong) IBOutlet UIView *playerContainerView;
+@property (nonatomic, strong) IBOutlet UIView *playerContainerSuperView;
 @property (nonatomic, strong) PlayerViewController *playerVC;
 @property (weak, nonatomic) IBOutlet UIView *controlsView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic, strong) UIWindow                      *externalWindow;
+@property (nonatomic, strong) UIScreen                      *externalScreen;
 @end
 
 @implementation ViewController
@@ -68,6 +72,160 @@
     }
 
 }
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidConnect:) name:UIScreenDidConnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidDisconnect:) name:UIScreenDidDisconnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(exteralScreenModeDidChange:) name:UIScreenModeDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidDisconnect:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(externalScreenDidDisconnect:) name:UIApplicationWillTerminateNotification object:nil];
+    
+}
+
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [self externalScreenDidDisconnect:nil];
+    [super viewWillDisappear: animated];
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenDidConnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenDidDisconnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenModeDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillTerminateNotification object:nil];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
+#pragma mark - EXternal Display Methods
+- (void)setupExternalScreen
+{
+    // Setup screen mirroring for an existing screen
+    NSArray *connectedScreens = [UIScreen screens];
+    NSLog(@"connectedScreens count:%lu: ",(unsigned long)connectedScreens.count);
+    if ([connectedScreens count] > 1)
+    {
+        UIScreen *mainScreen = [UIScreen mainScreen];
+        for (UIScreen *aScreen in connectedScreens)
+        {
+            if (aScreen != mainScreen)
+            {
+                [self configureExternalScreen:aScreen];
+                break;
+            }
+        }
+    }
+}
+
+-(void)externalScreenDidConnect:(NSNotification*)notification
+{
+    UIScreen *externalScreen = [notification object];
+    [self configureExternalScreen:externalScreen];
+}
+
+-(void)configureExternalScreen:(UIScreen *)externalScreen
+{
+    NSLog(@"configureExternalScreen....");
+    
+    self.externalScreen = externalScreen;
+    // self.connectedLabel.hidden = NO;
+    if(!_externalWindow) {
+        _externalWindow = [[UIWindow alloc] initWithFrame:[self.externalScreen bounds]];
+    }
+    [_externalWindow setHidden:NO];
+    
+    [[_externalWindow layer] setContentsGravity:AVLayerVideoGravityResizeAspect];
+    [_externalWindow setScreen:self.externalScreen];
+    [[_externalWindow screen] setOverscanCompensation:UIScreenOverscanCompensationScale];
+    
+    
+    //[_playerContainerView setFrame:[_externalWindow bounds]];
+    // [_externalWindow addSubview:_playerVC.view];
+    
+    [self getAVplayerLayerFromView:_playerVC.media view];
+    
+    UIView *view            = [[UIView alloc] init];
+    _playerLayer.frame      = [_externalWindow bounds];
+    [_playerLayer setContentsGravity:AVLayerVideoGravityResizeAspectFill];
+    [view.layer addSublayer:_playerLayer];
+    view.frame  = [_externalWindow bounds];
+    _waterMarkLbl.hidden = YES;
+    UILabel *waterMarkLabel = [[UILabel alloc] initWithFrame:CGRectMake(500, 150, 200, 70)];
+    waterMarkLabel.text = @"Player Watermark";
+    [waterMarkLabel sizeToFit];
+    waterMarkLabel.textColor = [UIColor whiteColor];
+    [view addSubview:waterMarkLabel];
+    [view bringSubviewToFront:waterMarkLabel];
+    
+    [_externalWindow addSubview:view];
+    
+    [_playerContainerView updateConstraintsIfNeeded];
+    [_playerContainerView setNeedsLayout];
+    [_playerContainerView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    for(NSLayoutConstraint *c in _playerContainerSuperView.constraints)
+    {
+        if(c.firstItem == _playerContainerView || c.secondItem == _playerContainerView) {
+            [_playerContainerSuperView removeConstraint:c];
+        }
+    }
+    [_externalWindow makeKeyAndVisible];
+}
+
+
+-(void)externalScreenDidDisconnect:(NSNotification*)notification
+{
+    NSLog(@"externalScreenDidDisconnect....");
+   // _waterMarkLbl.hidden    = NO;
+    [_playerContainerView setFrame:[_playerContainerSuperView bounds]];
+    [_playerContainerSuperView addSubview:_playerContainerView];
+    
+    [_playerContainerView updateConstraintsIfNeeded];
+    [_playerContainerView setNeedsLayout];
+    [_playerContainerView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    
+    if(_externalWindow)
+    {
+        self.externalScreen = nil;
+        [_externalWindow setHidden:YES];
+        [_externalWindow resignKeyWindow];
+    }
+    _externalWindow = nil;
+    
+}
+
+-(void)exteralScreenModeDidChange:(NSNotification*)notification
+{
+}
+
+- (void)getAVplayerLayerFromView:(UIView *)view {
+    // Get the subviews of the view
+    NSArray *subviews = [view subviews];
+    // Return if there are no subviews
+    if ([subviews count] == 0) return; // COUNT CHECK LINE
+    
+    for (UIView *subview in subviews) {
+        //[subview isKindOfClass:[UIView class]] //_AVPlayerLayerView//AVPlayerLayer
+        NSLog(@"++++++++view:%@",subview);
+        if ([subview.layer isKindOfClass:[AVPlayerLayer class]])
+        {
+            _playerLayer = (AVPlayerLayer *)subview.layer;
+            return;
+        }
+        // List the subviews of subview
+        [self getAVplayerLayerFromView:subview];
+    }
+}
+
 
 //****************************************************
 // MARK: - PlayerViewControllerDelegate Methods

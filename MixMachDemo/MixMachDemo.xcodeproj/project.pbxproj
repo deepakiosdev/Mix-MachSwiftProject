@@ -24,7 +24,10 @@
 		9E5D1A711D99083E004D9806 /* bipbopall.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1A701D99083E004D9806 /* bipbopall.m3u8 */; };
 		9E5D1A731D990864004D9806 /* skate_phantom_flex_4k.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1A721D990864004D9806 /* skate_phantom_flex_4k.m3u8 */; };
 		9E5D1A751D990A65004D9806 /* reverse_playback_master.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1A741D990A65004D9806 /* reverse_playback_master.m3u8 */; };
+		9E8621031DB8F7750098B376 /* AudioTrackListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8621021DB8F7750098B376 /* AudioTrackListVC.swift */; };
+		9E8621051DB8F9B50098B376 /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8621041DB8F9B50098B376 /* AudioTrack.swift */; };
 		9EE4C2021D993E5900CAD8F5 /* ElephantSeals.mov in Resources */ = {isa = PBXBuildFile; fileRef = 9EE4C2011D993E5900CAD8F5 /* ElephantSeals.mov */; };
+		9EFD703C1DB902C7005E9335 /* Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EFD703B1DB902C7005E9335 /* Utility.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,7 +55,11 @@
 		9E5D1A701D99083E004D9806 /* bipbopall.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bipbopall.m3u8; sourceTree = "<group>"; };
 		9E5D1A721D990864004D9806 /* skate_phantom_flex_4k.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skate_phantom_flex_4k.m3u8; sourceTree = "<group>"; };
 		9E5D1A741D990A65004D9806 /* reverse_playback_master.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = reverse_playback_master.m3u8; sourceTree = "<group>"; };
+		9E8621021DB8F7750098B376 /* AudioTrackListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioTrackListVC.swift; sourceTree = "<group>"; };
+		9E8621041DB8F9B50098B376 /* AudioTrack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioTrack.swift; sourceTree = "<group>"; };
 		9EE4C2011D993E5900CAD8F5 /* ElephantSeals.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = ElephantSeals.mov; sourceTree = "<group>"; };
+		9EFD703A1DB902C7005E9335 /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
+		9EFD703B1DB902C7005E9335 /* Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utility.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +106,10 @@
 				0052859F1D96D72200CDA84B /* LaunchScreen.storyboard */,
 				005285A21D96D72200CDA84B /* Info.plist */,
 				005285911D96D72200CDA84B /* Supporting Files */,
+				9E8621021DB8F7750098B376 /* AudioTrackListVC.swift */,
+				9E8621041DB8F9B50098B376 /* AudioTrack.swift */,
+				9EFD703A1DB902C7005E9335 /* Utility.h */,
+				9EFD703B1DB902C7005E9335 /* Utility.m */,
 			);
 			path = MixMachDemo;
 			sourceTree = "<group>";
@@ -228,11 +239,14 @@
 			files = (
 				9E5D1A631D98FE6B004D9806 /* NetworkManager.m in Sources */,
 				005285991D96D72200CDA84B /* ViewController.m in Sources */,
+				9EFD703C1DB902C7005E9335 /* Utility.m in Sources */,
 				005285B01D96EDB600CDA84B /* AVPlayerVC.swift in Sources */,
 				005285961D96D72200CDA84B /* AppDelegate.m in Sources */,
 				005285931D96D72200CDA84B /* main.m in Sources */,
+				9E8621031DB8F7750098B376 /* AudioTrackListVC.swift in Sources */,
 				005285AC1D96D75300CDA84B /* PlayerViewController.swift in Sources */,
 				9E5D1A671D98FFE0004D9806 /* Reachability.m in Sources */,
+				9E8621051DB8F9B50098B376 /* AudioTrack.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

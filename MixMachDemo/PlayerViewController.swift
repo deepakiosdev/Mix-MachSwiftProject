@@ -55,6 +55,9 @@ private var playerViewControllerKVOContext  = 0
     var isAutoPlay          = false
     var queuePlayer         = AVQueuePlayer()
     var urlAsset: AVURLAsset?
+    var curAudioTrack       = ""
+    var availableAudioTracks = [AudioTrack]()
+
 
     //MARK: - Computed Properties
     
@@ -619,6 +622,58 @@ private var playerViewControllerKVOContext  = 0
         let currentTimeF    = CMTimeConvertScale(currentTime, Int32(frameRate), CMTimeRoundingMethod.default)
         let frame           = fmodf(Float(currentTimeF.value), Float(frameRate))
         return String(format: "%02d:%02d:%02d:%02d", hours, min, sec, Int(frame))
+    }
+    
+    public func getAudioTracks()-> [AudioTrack] {
+        
+        var audioTracks = [AudioTrack]()
+        let audio: AVMediaSelectionGroup = (urlAsset?.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible))!
+        
+        for index in 1...audio.options.count {
+            let option: AVMediaSelectionOption = audio.options[index]
+            var displayName = Utility.getLanguageName(fromLanguageCode: option.displayName)
+            
+            if(displayName?.caseInsensitiveCompare("Track") == ComparisonResult.orderedSame) {
+                displayName = "Track\(index+1)"
+            }
+            
+            if index == 0 {
+                curAudioTrack = displayName!
+            }
+            
+            let track = AudioTrack ()
+            track.displayName = displayName!
+            track.isAssetTrack = false
+            audioTracks.append(track)
+        }
+        
+        if(!audioTracks.isEmpty) {
+            availableAudioTracks = audioTracks
+            return availableAudioTracks
+        }
+        
+        for index in 1...(urlAsset?.tracks(withMediaType: AVMediaTypeAudio))!.count {
+            let option = urlAsset?.tracks(withMediaType: AVMediaTypeAudio)[index]
+            var displayName = Utility.getLanguageName(fromLanguageCode: option?.languageCode)
+            
+            if(displayName?.caseInsensitiveCompare("Track") == ComparisonResult.orderedSame) {
+                displayName = "Track\(index+1)"
+            }
+            
+            if index == 0 {
+                curAudioTrack = displayName!
+            }
+            
+            let track = AudioTrack ()
+            track.displayName = displayName!
+            track.isAssetTrack = true
+            audioTracks.append(track)
+        }
+        
+        if(!audioTracks.isEmpty) {
+            availableAudioTracks = audioTracks
+        }
+        return audioTracks
     }
     
     //****************************************************

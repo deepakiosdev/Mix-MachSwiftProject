@@ -24,8 +24,12 @@
 		9E5D1A711D99083E004D9806 /* bipbopall.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1A701D99083E004D9806 /* bipbopall.m3u8 */; };
 		9E5D1A731D990864004D9806 /* skate_phantom_flex_4k.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1A721D990864004D9806 /* skate_phantom_flex_4k.m3u8 */; };
 		9E5D1A751D990A65004D9806 /* reverse_playback_master.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1A741D990A65004D9806 /* reverse_playback_master.m3u8 */; };
+<<<<<<< HEAD
 		9E8621031DB8F7750098B376 /* AudioTrackListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8621021DB8F7750098B376 /* AudioTrackListVC.swift */; };
 		9E8621051DB8F9B50098B376 /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8621041DB8F9B50098B376 /* AudioTrack.swift */; };
+=======
+		9EAED0D51DAB84BF001D922F /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EAED0D41DAB84BF001D922F /* AVKit.framework */; };
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
 		9EE4C2021D993E5900CAD8F5 /* ElephantSeals.mov in Resources */ = {isa = PBXBuildFile; fileRef = 9EE4C2011D993E5900CAD8F5 /* ElephantSeals.mov */; };
 		9EFD703C1DB902C7005E9335 /* Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EFD703B1DB902C7005E9335 /* Utility.m */; };
 /* End PBXBuildFile section */
@@ -55,8 +59,12 @@
 		9E5D1A701D99083E004D9806 /* bipbopall.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bipbopall.m3u8; sourceTree = "<group>"; };
 		9E5D1A721D990864004D9806 /* skate_phantom_flex_4k.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skate_phantom_flex_4k.m3u8; sourceTree = "<group>"; };
 		9E5D1A741D990A65004D9806 /* reverse_playback_master.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = reverse_playback_master.m3u8; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		9E8621021DB8F7750098B376 /* AudioTrackListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioTrackListVC.swift; sourceTree = "<group>"; };
 		9E8621041DB8F9B50098B376 /* AudioTrack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioTrack.swift; sourceTree = "<group>"; };
+=======
+		9EAED0D41DAB84BF001D922F /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
 		9EE4C2011D993E5900CAD8F5 /* ElephantSeals.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = ElephantSeals.mov; sourceTree = "<group>"; };
 		9EFD703A1DB902C7005E9335 /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
 		9EFD703B1DB902C7005E9335 /* Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utility.m; sourceTree = "<group>"; };
@@ -67,6 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EAED0D51DAB84BF001D922F /* AVKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +90,7 @@
 				005285901D96D72200CDA84B /* MixMachDemo */,
 				0052858F1D96D72200CDA84B /* Products */,
 				005285A81D96D75200CDA84B /* MixMachDemo-Bridging-Header.h */,
+				9EAED0D01DAB8391001D922F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -156,6 +166,14 @@
 			path = Reachability;
 			sourceTree = "<group>";
 		};
+		9EAED0D01DAB8391001D922F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9EAED0D41DAB84BF001D922F /* AVKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -187,9 +205,14 @@
 				TargetAttributes = {
 					0052858D1D96D72200CDA84B = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = 9L2YFXM6F2;
+						DevelopmentTeam = FKM8B3H9HT;
 						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -293,7 +316,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -312,7 +335,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -341,7 +364,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -354,7 +377,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -367,10 +390,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 9L2YFXM6F2;
+				DEVELOPMENT_TEAM = FKM8B3H9HT;
 				INFOPLIST_FILE = MixMachDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Deepak.MixMachDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -385,10 +410,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 9L2YFXM6F2;
+				DEVELOPMENT_TEAM = FKM8B3H9HT;
 				INFOPLIST_FILE = MixMachDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Deepak.MixMachDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";

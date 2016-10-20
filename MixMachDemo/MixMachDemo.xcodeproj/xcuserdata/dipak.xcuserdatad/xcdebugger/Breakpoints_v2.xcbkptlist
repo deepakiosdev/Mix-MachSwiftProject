@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744321.161034"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "471"
-            endingLineNumber = "471"
+            startingLineNumber = "542"
+            endingLineNumber = "542"
             landmarkName = "observeValue(forKeyPath:of:change:context:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,16 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744321.161034"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "420"
             endingLineNumber = "420"
+=======
+            startingLineNumber = "491"
+            endingLineNumber = "491"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkName = "observeValue(forKeyPath:of:change:context:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -42,13 +47,20 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MixMachDemo/ViewController.m"
-            timestampString = "496668515.485209"
+            timestampString = "498414083.969976"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "73"
             endingLineNumber = "73"
             landmarkName = "-prepareForSegue:sender:"
             landmarkType = "7">
+=======
+            startingLineNumber = "79"
+            endingLineNumber = "79"
+            landmarkName = "@implementation ViewController"
+            landmarkType = "3">
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -58,11 +70,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744188.409653"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "382"
-            endingLineNumber = "382"
+            startingLineNumber = "419"
+            endingLineNumber = "419"
             landmarkName = "initPlayer(urlString:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -70,31 +82,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PlayerViewController.swift"
-            timestampString = "496744321.161034"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "528"
-            endingLineNumber = "528"
-            landmarkName = "observeValue(forKeyPath:of:change:context:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744188.409653"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "317"
-            endingLineNumber = "317"
+            startingLineNumber = "355"
+            endingLineNumber = "355"
             landmarkName = "asynchronouslyLoadURLAsset(_:)"
             landmarkType = "7">
             <Locations>
@@ -138,11 +134,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496740916.507357"
+            timestampString = "497782558.298757"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "79"
-            endingLineNumber = "79"
+            startingLineNumber = "78"
+            endingLineNumber = "78"
             landmarkName = "PlayerViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -154,11 +150,16 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744188.409653"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "251"
             endingLineNumber = "251"
+=======
+            startingLineNumber = "289"
+            endingLineNumber = "289"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkName = "getAssetFrameRate()"
             landmarkType = "7">
          </BreakpointContent>
@@ -170,11 +171,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744321.161034"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "457"
-            endingLineNumber = "457"
+            startingLineNumber = "528"
+            endingLineNumber = "528"
             landmarkName = "observeValue(forKeyPath:of:change:context:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -186,77 +187,20 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496740916.507357"
+            timestampString = "497782558.298757"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "74"
-            endingLineNumber = "74"
-            landmarkName = "PlayerViewController"
-            landmarkType = "3">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PlayerViewController.swift"
-            timestampString = "496744321.161034"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "541"
-            endingLineNumber = "541"
-            landmarkName = "observeValue(forKeyPath:of:change:context:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MixMachDemo.PlayerViewController.observeValue (forKeyPath : Swift.Optional&lt;Swift.String&gt;, of : Swift.Optional&lt;Any&gt;, change : Swift.Optional&lt;Swift.Dictionary&lt;__C.NSKeyValueChangeKey, Any&gt;&gt;, context : Swift.Optional&lt;Swift.UnsafeMutableRawPointer&gt;) -&gt; ()"
-                  moduleName = "MixMachDemo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/dipak/Dipak/Projects/DemoProjects/Mix-MachSwiftProject/MixMachDemo/PlayerViewController.swift"
-                  timestampString = "496749767.454278"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "552"
-                  endingLineNumber = "552"
-                  offsetFromSymbolStart = "13068">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MixMachDemo.PlayerViewController.observeValue (forKeyPath : Swift.Optional&lt;Swift.String&gt;, of : Swift.Optional&lt;Any&gt;, change : Swift.Optional&lt;Swift.Dictionary&lt;__C.NSKeyValueChangeKey, Any&gt;&gt;, context : Swift.Optional&lt;Swift.UnsafeMutableRawPointer&gt;) -&gt; ()"
-                  moduleName = "MixMachDemo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/dipak/Dipak/Projects/DemoProjects/Mix-MachSwiftProject/MixMachDemo/PlayerViewController.swift"
-                  timestampString = "496749767.455691"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "552"
-                  endingLineNumber = "552"
-                  offsetFromSymbolStart = "13542">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PlayerViewController.swift"
-            timestampString = "496744188.409653"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "234"
             endingLineNumber = "234"
             landmarkName = "playerDidFinishPlaying(note:)"
             landmarkType = "7">
+=======
+            startingLineNumber = "73"
+            endingLineNumber = "73"
+            landmarkName = "PlayerViewController"
+            landmarkType = "3">
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -266,6 +210,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
+<<<<<<< HEAD
             timestampString = "496744188.409653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
@@ -288,6 +233,14 @@
             startingLineNumber = "192"
             endingLineNumber = "192"
             landmarkName = "addObservers()"
+=======
+            timestampString = "498410134.928108"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "252"
+            endingLineNumber = "252"
+            landmarkName = "cleanUp()"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -298,12 +251,18 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496745239.42384"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "576"
             endingLineNumber = "576"
             landmarkName = "playForward()"
+=======
+            startingLineNumber = "220"
+            endingLineNumber = "220"
+            landmarkName = "addObservers()"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -314,44 +273,18 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496740916.507357"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "110"
-            endingLineNumber = "110"
-            landmarkName = "PlayerViewController"
-            landmarkType = "3">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PlayerViewController.swift"
-            timestampString = "496744321.161034"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "532"
-            endingLineNumber = "532"
-            landmarkName = "observeValue(forKeyPath:of:change:context:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MixMachDemo/ViewController.m"
-            timestampString = "496737534.894571"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "125"
             endingLineNumber = "125"
             landmarkName = "-setupExternalScreen"
+=======
+            startingLineNumber = "647"
+            endingLineNumber = "647"
+            landmarkName = "playForward()"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -362,12 +295,18 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MixMachDemo/ViewController.m"
-            timestampString = "496733254.591151"
+            timestampString = "498414083.969976"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "95"
             endingLineNumber = "95"
             landmarkName = "-viewDidDisappear:"
+=======
+            startingLineNumber = "131"
+            endingLineNumber = "131"
+            landmarkName = "-playerFrameRateChangedWithFrameRate:"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -377,13 +316,19 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PlayerViewController.swift"
-            timestampString = "496745239.42384"
+            filePath = "MixMachDemo/ViewController.m"
+            timestampString = "498414083.969976"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "589"
             endingLineNumber = "589"
             landmarkName = "playFromRate(playerRate:)"
+=======
+            startingLineNumber = "101"
+            endingLineNumber = "101"
+            landmarkName = "-prepareForSegue:sender:"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -394,11 +339,16 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496745239.42384"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "606"
             endingLineNumber = "606"
+=======
+            startingLineNumber = "677"
+            endingLineNumber = "677"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkName = "stepSeconds(byCount:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -410,11 +360,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496741341.772279"
+            timestampString = "497955443.448952"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
+            startingLineNumber = "116"
+            endingLineNumber = "116"
             landmarkName = "PlayerViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -426,12 +376,18 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MixMachDemo/ViewController.m"
-            timestampString = "496737534.894571"
+            timestampString = "498414083.969976"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "110"
             endingLineNumber = "110"
             landmarkName = "-setupExternalScreen"
+=======
+            startingLineNumber = "116"
+            endingLineNumber = "116"
+            landmarkName = "-playerTimeUpdateWithTime:"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -442,11 +398,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744321.161034"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "490"
-            endingLineNumber = "490"
+            startingLineNumber = "561"
+            endingLineNumber = "561"
             landmarkName = "observeValue(forKeyPath:of:change:context:)"
             landmarkType = "7">
             <Locations>
@@ -490,12 +446,18 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MixMachDemo/ViewController.m"
-            timestampString = "496737534.894571"
+            timestampString = "498414083.969976"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "103"
             endingLineNumber = "103"
             landmarkName = "-didReceiveMemoryWarning"
+=======
+            startingLineNumber = "109"
+            endingLineNumber = "109"
+            landmarkName = "-prepareForSegue:sender:"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -506,12 +468,18 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MixMachDemo/ViewController.m"
-            timestampString = "496738538.183159"
+            timestampString = "498414083.969976"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "92"
             endingLineNumber = "92"
             landmarkName = "-viewWillDisappear:"
+=======
+            startingLineNumber = "98"
+            endingLineNumber = "98"
+            landmarkName = "-prepareForSegue:sender:"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -522,11 +490,16 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744188.409653"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "180"
             endingLineNumber = "180"
+=======
+            startingLineNumber = "208"
+            endingLineNumber = "208"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkName = "addObservers()"
             landmarkType = "7">
             <Locations>
@@ -570,11 +543,16 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744188.409653"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "182"
             endingLineNumber = "182"
+=======
+            startingLineNumber = "210"
+            endingLineNumber = "210"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkName = "addObservers()"
             landmarkType = "7">
          </BreakpointContent>
@@ -586,11 +564,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496744515.135154"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "500"
-            endingLineNumber = "500"
+            startingLineNumber = "571"
+            endingLineNumber = "571"
             landmarkName = "observeValue(forKeyPath:of:change:context:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -602,13 +580,20 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496747647.214441"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "125"
             endingLineNumber = "125"
             landmarkName = "init()"
             landmarkType = "7">
+=======
+            startingLineNumber = "703"
+            endingLineNumber = "703"
+            landmarkName = "PlayerViewController"
+            landmarkType = "3">
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -617,13 +602,19 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MixMachDemo/ViewController.m"
-            timestampString = "496747842.102558"
+            filePath = "PlayerViewController.swift"
+            timestampString = "497955443.448952"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "78"
             endingLineNumber = "78"
             landmarkName = "-viewWillAppear:"
+=======
+            startingLineNumber = "126"
+            endingLineNumber = "126"
+            landmarkName = "init()"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -634,11 +625,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496748112.942532"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "433"
-            endingLineNumber = "433"
+            startingLineNumber = "504"
+            endingLineNumber = "504"
             landmarkName = "observeValue(forKeyPath:of:change:context:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -646,15 +637,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496748776.790621"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "486"
-            endingLineNumber = "486"
+            startingLineNumber = "557"
+            endingLineNumber = "557"
             landmarkName = "observeValue(forKeyPath:of:change:context:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -662,15 +653,20 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496750479.920029"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "620"
             endingLineNumber = "620"
+=======
+            startingLineNumber = "691"
+            endingLineNumber = "691"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkName = "getTimeCodeFromSeonds(time:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -682,11 +678,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496749459.918533"
+            timestampString = "497955443.448952"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
             landmarkName = "PlayerViewController"
             landmarkType = "3">
             <Locations>
@@ -726,16 +722,310 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PlayerViewController.swift"
-            timestampString = "496749959.694486"
+            timestampString = "498410134.928108"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "688"
+            endingLineNumber = "688"
+            landmarkName = "getTimeCodeFromSeonds(time:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PlayerViewController.swift"
+            timestampString = "498410134.928108"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "175"
+            endingLineNumber = "175"
+            landmarkName = "configureAirplay()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PlayerViewController.swift"
+            timestampString = "497967021.927052"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
+            landmarkName = "setupPlayerPeriodicTimeObserver()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PlayerViewController.swift"
+            timestampString = "497955422.403944"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "108"
+            endingLineNumber = "108"
+            landmarkName = "PlayerViewController"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PlayerViewController.swift"
+            timestampString = "498410134.928108"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "279"
+            endingLineNumber = "279"
+            landmarkName = "getAssetFrameRate()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MixMachDemo/ViewController.m"
+            timestampString = "498414083.969976"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "84"
+            endingLineNumber = "84"
+            landmarkName = "-viewWillDisappear:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PlayerViewController.swift"
+            timestampString = "497967021.927052"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "149"
+            endingLineNumber = "149"
+            landmarkName = "setupPlayerPeriodicTimeObserver()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MixMachDemo.PlayerViewController.(setupPlayerPeriodicTimeObserver in _605C663C01DE2B4EBFDB029DF78E7535) () -&gt; ()"
+                  moduleName = "MixMachDemo"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/dipak/Dipak/SwiftPlayer/Mix-MachSwiftProject/MixMachDemo/PlayerViewController.swift"
+                  timestampString = "497966889.189051"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "151"
+                  endingLineNumber = "151"
+                  offsetFromSymbolStart = "503">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MixMachDemo.PlayerViewController.((setupPlayerPeriodicTimeObserver in _605C663C01DE2B4EBFDB029DF78E7535) () -&gt; ()).(closure #1)"
+                  moduleName = "MixMachDemo"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/dipak/Dipak/SwiftPlayer/Mix-MachSwiftProject/MixMachDemo/PlayerViewController.swift"
+                  timestampString = "497966889.190354"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "151"
+                  endingLineNumber = "151"
+                  offsetFromSymbolStart = "41">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PlayerViewController.swift"
+            timestampString = "497966025.294211"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "145"
+            endingLineNumber = "145"
+            landmarkName = "setupPlayerPeriodicTimeObserver()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MixMachDemo/AppDelegate.m"
+            timestampString = "498039733.122243"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "71"
+            endingLineNumber = "71"
+            landmarkName = "-URLSession:assetDownloadTask:didFinishDownloadingToURL:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MixMachDemo/AppDelegate.m"
+            timestampString = "498040666.797811"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
+            landmarkName = "-URLSession:assetDownloadTask:didLoadTimeRange:totalTimeRangesLoaded:timeRangeExpectedToLoad:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MixMachDemo/AppDelegate.m"
+            timestampString = "498040668.175293"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
+            landmarkName = "-URLSession:assetDownloadTask:didResolveMediaSelection:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MixMachDemo/AppDelegate.m"
+            timestampString = "498040671.640613"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "-backGroundDownlaod"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MixMachDemo/AppDelegate.m"
+            timestampString = "498040751.981635"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
+            landmarkName = "-backGroundDownlaod"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PlayerViewController.swift"
+            timestampString = "498400491.845363"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "160"
+            endingLineNumber = "160"
+            landmarkName = "showWaterMark()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MixMachDemo/ViewController.m"
+            timestampString = "498414435.85781"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "309"
+            endingLineNumber = "309"
+            landmarkName = "-externalScreenDidConnect:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MixMachDemo/ViewController.m"
+            timestampString = "498414265.058679"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "251"
+            endingLineNumber = "251"
+            landmarkName = "-configureExternalScreen:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MixMachDemo/ViewController.m"
+            timestampString = "498414265.058679"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "617"
             endingLineNumber = "617"
             landmarkName = "getTimeCodeFromSeonds(time:)"
+=======
+            startingLineNumber = "236"
+            endingLineNumber = "236"
+            landmarkName = "-listSubviewsOfView:"
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

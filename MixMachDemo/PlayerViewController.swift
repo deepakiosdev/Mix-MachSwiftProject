@@ -60,7 +60,6 @@ private var playerViewControllerKVOContext  = 0
 
 
     //MARK: - Computed Properties
-    
     ////
     @objc private var currentItem: AVPlayerItem? = nil {
         didSet {
@@ -106,8 +105,10 @@ private var playerViewControllerKVOContext  = 0
             return CMTimeGetSeconds(queuePlayer.currentTime())
         }
         set {
+            //print("newValue:\(newValue)")
             let newTime = CMTimeMakeWithSeconds(newValue, Int32(frameRate))
             queuePlayer.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
+                //print("1---newValue:\(newValue)")
             })
         }
     }
@@ -150,9 +151,36 @@ private var playerViewControllerKVOContext  = 0
         let interval        = CMTimeMakeWithSeconds(Float64(frame), Int32(NSEC_PER_SEC))
         timeObserverToken   = queuePlayer.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [unowned self] time in
             let timeElapsed  = Double(CMTimeGetSeconds((self.currentItem?.currentTime())!))
-            // print("timeElapsed:\(timeElapsed)")
+             print("timeElapsed:\(timeElapsed)")
             self.delegate!.playerTimeUpdate(time:timeElapsed)
         }
+    }
+    
+
+    public func showWaterMark() {
+        
+        print("Subviews Count:\(mediaPlayer.contentOverlayView?.subviews.count)\n Subviews:\(mediaPlayer.contentOverlayView?.subviews)")
+        if mediaPlayer.contentOverlayView?.subviews.count == 0 {
+            let label   = UILabel()
+            label.text  = "SWift Player"
+            label.frame =  CGRect.init(x: 200, y: 100, width: 200, height: 100)
+            label.textColor = UIColor.white
+            label.sizeToFit()
+            mediaPlayer.contentOverlayView?.addSubview(label)
+         }
+    }
+
+    public func configureAirplay() {
+        print("configureAirplay...")
+        mediaPlayer.showsPlaybackControls = false
+       mediaPlayer.player?.allowsExternalPlayback = false
+       mediaPlayer.player?.usesExternalPlaybackWhileExternalScreenIsActive = false
+        queuePlayer.allowsExternalPlayback = false
+        queuePlayer.usesExternalPlaybackWhileExternalScreenIsActive = false
+//        let volumeView = MPVolumeView()
+//        volumeView.showsVolumeSlider = false
+//        volumeView.sizeToFit()
+//        mediaPlayer.view.addSubview(volumeView)
     }
     
     private func cleanUpPlayerPeriodicTimeObserver() {
@@ -197,6 +225,8 @@ private var playerViewControllerKVOContext  = 0
                     options: [.old, .new],
                     context: &playerViewControllerKVOContext)
         
+        //
+        
     }
     
     func removeObservers() {
@@ -215,7 +245,10 @@ private var playerViewControllerKVOContext  = 0
     func prepareToPlay() {
         frameRate = getAssetFrameRate()
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: currentItem)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name:NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         //addObservers()
+        showWaterMark()
+        //setUpWaterMarkLayer()
         setupPlayerPeriodicTimeObserver()
     }
     
@@ -238,6 +271,11 @@ private var playerViewControllerKVOContext  = 0
             cleanUp()
             initPlayer(urlString: "")
         }
+    }
+    
+   func applicationWillEnterForeground(note: NSNotification) {
+    print("applicationWillEnterForeground..SubviewsCount:%@\(mediaPlayer.contentOverlayView?.subviews.count),subviews:\(mediaPlayer.contentOverlayView?.subviews)")
+   
     }
     
     func getAssetFrameRate() -> Float {
@@ -342,21 +380,20 @@ private var playerViewControllerKVOContext  = 0
     
     public func initPlayer(urlString: String) {
         
-        var urlString = urlString
+       // var urlString = urlString
         ///////////Demo Urls//////////////////////////////////////
-        ///var urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
+        var urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
         //var urlString   = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
-        //let localURL    = true
-        let localURL    = false
+        let localURL    = true
+        //let localURL    = false
         
         // MARK: - m3u8 urls
         // let urlString = Bundle.main.path(forResource: "bipbopall", ofType: "m3u8")!
         
-        //var urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
+      //  urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
         //  var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
-        //var urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-        
-        urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
+      //var urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+       // urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
         //let urlString = "https://devimages.apple.com.edgekey.net/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8" //(Reverse playback)
         //let urlString = "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8" //(4K)
         //let urlString = "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch3/appleman.m3u8" //((LIVE TV)
@@ -388,6 +425,7 @@ private var playerViewControllerKVOContext  = 0
         
         queuePlayer = AVQueuePlayer()
         mediaPlayer.player = queuePlayer
+        configureAirplay()
         addObservers()
         
         let urlAsset    = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
@@ -395,6 +433,39 @@ private var playerViewControllerKVOContext  = 0
         //let playerItem = AVPlayerItem(asset: urlAsset)
         // mediaPlayer.player = AVPlayer(playerItem: playerItem)
         asynchronouslyLoadURLAsset(urlAsset)
+    }
+    
+  //  var waterMarklayer: CALayer
+
+    
+    func setUpWaterMarkLayer() {
+        /*var waterMarklayer: CALayer = CALayer()
+        waterMarklayer.backgroundColor = UIColor.blue.cgColor
+        waterMarklayer.borderWidth = 100.0
+        waterMarklayer.borderColor = UIColor.red.cgColor
+        waterMarklayer.shadowOpacity = 0.7
+        waterMarklayer.shadowRadius = 10.0*/
+        
+        let titleLayer = CATextLayer()
+        titleLayer.backgroundColor = UIColor.clear.cgColor
+        titleLayer.string = "Watermark Layer"
+       
+        titleLayer.frame = CGRect.init(x: 200, y: 100, width: mediaPlayer.videoBounds.width/3, height: mediaPlayer.videoBounds.height / 6)
+        titleLayer.fontSize = 28
+        titleLayer.shadowOpacity = 0.5
+        
+        mediaPlayer.view.layer.addSublayer(titleLayer)
+
+        // create text Layer
+       /* CATextLayer* titleLayer = [CATextLayer layer];
+        titleLayer.backgroundColor = [UIColor clearColor].CGColor;
+        titleLayer.string = @"Dummy text";
+        titleLayer.font = CFBridgingRetain(@"Helvetica");
+        titleLayer.fontSize = 28;
+        titleLayer.shadowOpacity = 0.5;
+        titleLayer.alignmentMode = kCAAlignmentCenter;
+        titleLayer.frame = CGRectMake(0, 50, videoSize.width, videoSize.height / 6);
+        [parentLayer addSublayer:titleLayer];*/
         
     }
     
@@ -406,7 +477,7 @@ private var playerViewControllerKVOContext  = 0
         asset.resourceLoader.setDelegate(self, queue:DispatchQueue.main)
         
         let playerItem = AVPlayerItem(asset: asset)
-        mediaPlayer.player = AVPlayer(playerItem: playerItem) // <-- the fix
+        mediaPlayer.player = AVPlayer(playerItem: playerItem)
         mediaPlayer.player?.play()
     }
     
@@ -600,8 +671,8 @@ private var playerViewControllerKVOContext  = 0
         self.pause()
         currentItem?.cancelPendingSeeks()
         let secondsFromFrame    = Float(numberOfFrame)/frameRate
-        self.currentTime        += Double(secondsFromFrame)
-        //currentItem?.step(byCount: numberOfFrame) //Its working for downloaded assets
+       // self.currentTime        += Double(secondsFromFrame)
+        currentItem?.step(byCount: numberOfFrame) //Its working for mp4 and local assets
     }
     
     
@@ -624,6 +695,7 @@ private var playerViewControllerKVOContext  = 0
         return String(format: "%02d:%02d:%02d:%02d", hours, min, sec, Int(frame))
     }
     
+<<<<<<< HEAD
     public func getAudioTracks()-> [AudioTrack] {
         
         var audioTracks = [AudioTrack]()
@@ -674,6 +746,10 @@ private var playerViewControllerKVOContext  = 0
             availableAudioTracks = audioTracks
         }
         return audioTracks
+=======
+    public func getPlayerView ()-> UIView {
+        return mediaPlayer.view
+>>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
     }
     
     //****************************************************

@@ -24,12 +24,8 @@
 		9E5D1A711D99083E004D9806 /* bipbopall.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1A701D99083E004D9806 /* bipbopall.m3u8 */; };
 		9E5D1A731D990864004D9806 /* skate_phantom_flex_4k.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1A721D990864004D9806 /* skate_phantom_flex_4k.m3u8 */; };
 		9E5D1A751D990A65004D9806 /* reverse_playback_master.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1A741D990A65004D9806 /* reverse_playback_master.m3u8 */; };
-<<<<<<< HEAD
 		9E8621031DB8F7750098B376 /* AudioTrackListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8621021DB8F7750098B376 /* AudioTrackListVC.swift */; };
 		9E8621051DB8F9B50098B376 /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8621041DB8F9B50098B376 /* AudioTrack.swift */; };
-=======
-		9EAED0D51DAB84BF001D922F /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EAED0D41DAB84BF001D922F /* AVKit.framework */; };
->>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
 		9EE4C2021D993E5900CAD8F5 /* ElephantSeals.mov in Resources */ = {isa = PBXBuildFile; fileRef = 9EE4C2011D993E5900CAD8F5 /* ElephantSeals.mov */; };
 		9EFD703C1DB902C7005E9335 /* Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EFD703B1DB902C7005E9335 /* Utility.m */; };
 /* End PBXBuildFile section */
@@ -59,12 +55,9 @@
 		9E5D1A701D99083E004D9806 /* bipbopall.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bipbopall.m3u8; sourceTree = "<group>"; };
 		9E5D1A721D990864004D9806 /* skate_phantom_flex_4k.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skate_phantom_flex_4k.m3u8; sourceTree = "<group>"; };
 		9E5D1A741D990A65004D9806 /* reverse_playback_master.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = reverse_playback_master.m3u8; sourceTree = "<group>"; };
-<<<<<<< HEAD
 		9E8621021DB8F7750098B376 /* AudioTrackListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioTrackListVC.swift; sourceTree = "<group>"; };
 		9E8621041DB8F9B50098B376 /* AudioTrack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioTrack.swift; sourceTree = "<group>"; };
-=======
-		9EAED0D41DAB84BF001D922F /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
->>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
+
 		9EE4C2011D993E5900CAD8F5 /* ElephantSeals.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = ElephantSeals.mov; sourceTree = "<group>"; };
 		9EFD703A1DB902C7005E9335 /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
 		9EFD703B1DB902C7005E9335 /* Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utility.m; sourceTree = "<group>"; };

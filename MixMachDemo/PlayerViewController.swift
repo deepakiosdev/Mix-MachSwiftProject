@@ -695,7 +695,6 @@ private var playerViewControllerKVOContext  = 0
         return String(format: "%02d:%02d:%02d:%02d", hours, min, sec, Int(frame))
     }
     
-<<<<<<< HEAD
     public func getAudioTracks()-> [AudioTrack] {
         
         var audioTracks = [AudioTrack]()
@@ -746,10 +745,9 @@ private var playerViewControllerKVOContext  = 0
             availableAudioTracks = audioTracks
         }
         return audioTracks
-=======
+    }
     public func getPlayerView ()-> UIView {
         return mediaPlayer.view
->>>>>>> 2a42c209ef0343d2e4287f4069c16361375f8b26
     }
     
     //****************************************************

@@ -7,6 +7,8 @@
 //
 
 #import "Utility.h"
+#import "Bitrate.h"
+
 
 /* Audio track constants */
 #define AUDIO_TRACK_NAME_UNKNOWN_LANGUAGE                       @"Unknown Language"
@@ -46,5 +48,86 @@
     else {
         return value;
     }
+}
+
+
++(NSArray*)getBitratesFromM3u8:(NSString*)m3u8String withURL:(NSString*)urlString
+{
+    NSLog(@"Master m3u8 url:%@", urlString);
+    if ([m3u8String isEqualToString:@""] || !m3u8String) {
+        return nil;
+    }
+    
+    NSMutableArray *bandwidths = [[NSMutableArray alloc] initWithCapacity:0];
+    NSArray *m3u8Playlist = [m3u8String componentsSeparatedByString:@"\n"];
+    
+    if([m3u8String rangeOfString:@"BANDWIDTH="].location != NSNotFound)
+    {
+        NSMutableArray *bandwidthStrings = [[NSMutableArray alloc] init];
+        
+        int index = 1;
+        for (NSString *streamString in m3u8Playlist)
+        {
+            if([streamString rangeOfString:@"BANDWIDTH="].location != NSNotFound)
+            {
+                [bandwidthStrings addObject:streamString];
+                
+                NSRange bandwidthRange = [streamString rangeOfString:@"BANDWIDTH="];
+                NSString *bandwidthString = [streamString substringFromIndex:bandwidthRange.location + bandwidthRange.length];
+                NSString *value;
+                NSRange commaRange = [bandwidthString rangeOfString:@","];
+                if (NSNotFound == commaRange.location) {
+                    value = bandwidthString;
+                } else {
+                    value = [bandwidthString substringToIndex:commaRange.location];
+                }
+                NSString *playlistURL   = m3u8Playlist[index];
+                if (playlistURL)
+                {
+                    Bitrate *bitrate   = [[Bitrate alloc] init];
+                    bitrate.bitrate      =  value.doubleValue;
+                    bitrate.birtateTitle = [Utility getBitrateName:[value doubleValue]];
+                    NSLog(@"bit rate %f", bitrate.bitrate);
+                    
+                    bitrate.URL          = [playlistURL stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    
+                    if(![bitrate.URL hasPrefix:@"http"]) {
+                        bitrate.URL = [[[[[NSURL URLWithString:urlString] URLByDeletingLastPathComponent] URLByAppendingPathComponent:bitrate.URL]  absoluteString]stringByRemovingPercentEncoding];
+                    }
+                    NSLog(@"Bitrate:%f, and corresponding m3u8 url:%@",value.doubleValue,bitrate.URL);
+                    [bandwidths addObject:bitrate];
+                }
+            }
+            ++index;
+        }
+        
+        NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"bitrate"  ascending:YES];
+        NSArray *sortedArray = [bandwidths sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
+        
+        bandwidths = [NSMutableArray arrayWithArray:sortedArray];
+    }
+    
+    return bandwidths;
+}
+
++ (NSString *)getBitrateName:(double)bitrate
+{
+    if (bitrate  >= 1048576)
+    {
+        bitrate = bitrate/(1024*1024);
+        bitrate = round(10 * bitrate)/ 10;
+        return [NSString stringWithFormat:@"%.1f Mbps",bitrate];
+    }
+    else if (bitrate >= 1024)
+    {
+        bitrate = bitrate/1024;
+        bitrate = round(10 * bitrate)/10;
+        return [NSString stringWithFormat:@"%4d Kbps",(int)bitrate];
+    }
+    else if (bitrate < 1024) {
+        return [NSString stringWithFormat:@"%4d bps",(int)bitrate];
+    }
+    
+    return [NSString stringWithFormat:@"%f",bitrate];
 }
 @end

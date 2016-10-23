@@ -12,5 +12,6 @@
 
 +(NSString *)getLanguageNameFromLanguageCode:(NSString *)languageCode;
 +(NSString*)checkForNull:(NSString*)value;
-
++(NSArray*)getBitratesFromM3u8:(NSString*)m3u8String withURL:(NSString*)urlString;
++(NSString *)getBitrateName:(double)bitrate;
 @end

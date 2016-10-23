@@ -4,3 +4,4 @@
 
 #import "NetworkManager.h"
 #import "Utility.h"
+#import "Bitrate.h"

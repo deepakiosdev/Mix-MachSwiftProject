@@ -1,26 +1,24 @@
 //
-//  AudioTrackListVC.swift
+//  BitrateListVC.swift
 //  MixMachDemo
 //
-//  Created by Dipak on 10/20/16.
+//  Created by Deepak on 22/10/16.
 //  Copyright © 2016 Deepak. All rights reserved.
 //
 
-import UIKit
 
 /*!
-	@protocol	AudioTrackDelegate
-	@abstract	A protocol for delegates of AudioTrackListVC.
+	@protocol	BitrateListDelegate
+	@abstract	A protocol for delegates of BitrateListVC.
  */
-@objc protocol AudioTrackDelegate {
-    func selected(audioTrack track:AudioTrack)
-    
+@objc protocol BitrateListDelegate {
+    func selected(bitrate :Bitrate)
 }
 
-class AudioTrackListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class BitrateListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    var delegate: AudioTrackDelegate?
-    var audioTracks = [AudioTrack]()
+    var delegate: BitrateListDelegate?
+    var bitRates = [Bitrate]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,20 +32,19 @@ class AudioTrackListVC: UIViewController, UITableViewDataSource, UITableViewDele
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return audioTracks.count
+        return bitRates.count
     }
-    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! AudioTrackCell
-        cell.trackName.text = (audioTracks[indexPath.row] as AudioTrack).displayName
+        cell.trackName.text = (bitRates[indexPath.row] as Bitrate).birtateTitle
         return cell
         
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.selected(audioTrack:audioTracks[indexPath.row])
+        delegate?.selected(bitrate: bitRates[indexPath.row])
         self.dismiss(animated: true, completion: nil)
     }
-
+    
 }

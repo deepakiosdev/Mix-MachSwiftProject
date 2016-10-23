@@ -7,14 +7,17 @@
 //
 
 #import "ViewController.h"
+
 #import "MixMachDemo-Swift.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
+#import "Utility.h"
+
 
 
 @class PlayerViewController;
 
-@interface ViewController () <PlayerViewControllerDelegate>
+@interface ViewController () <PlayerViewControllerDelegate, AudioTrackDelegate, BitrateListDelegate>
 
 @property (weak, nonatomic) IBOutlet UISlider *seekBar;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolBar;
@@ -27,9 +30,13 @@
 @property (nonatomic, strong) PlayerViewController *playerVC;
 @property (weak, nonatomic) IBOutlet UIView *controlsView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
-@property (nonatomic, strong) UIWindow                      *externalWindow;
-@property (nonatomic, strong) UIScreen                      *externalScreen;
+@property (weak, nonatomic) IBOutlet UILabel *waterMarkLbl;
+@property (nonatomic, strong) UIWindow      *externalWindow;
+@property (nonatomic, strong) UIScreen      *externalScreen;
 @property (nonatomic, strong) AVPlayerLayer *playerLayer;
+@property (nonatomic, strong) NSArray *audioTracks;
+@property (nonatomic, strong) NSArray *bitRates;
+
 
 @end
 
@@ -106,7 +113,20 @@
         NSString *url           = @"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
         [_playerVC initPlayerWithUrlString:url];
 
+    } else if ([segue.identifier isEqualToString:@"AudioTrackListVC"]) {
+        
+        AudioTrackListVC *audioTrackVC = (AudioTrackListVC *)
+        segue.destinationViewController;
+        audioTrackVC.audioTracks = _audioTracks;
+        audioTrackVC.delegate      = self;
+    } else if ([segue.identifier isEqualToString:@"BitrateListVC"]) {
+        
+        BitrateListVC *bitrateListVC = (BitrateListVC *)
+        segue.destinationViewController;
+        bitrateListVC.bitRates = _bitRates;
+        bitrateListVC.delegate = self;
     }
+
 
 }
 
@@ -149,7 +169,7 @@
     NSLog(@"configureExternalScreen....");
     
     self.externalScreen = externalScreen;
-    // self.connectedLabel.hidden = NO;
+    _waterMarkLbl.hidden = YES;
     if(!_externalWindow) {
         _externalWindow = [[UIWindow alloc] initWithFrame:[self.externalScreen bounds]];
     }
@@ -162,23 +182,22 @@
     
     //[_playerContainerView setFrame:[_externalWindow bounds]];
     // [_externalWindow addSubview:_playerVC.view];
-    /*
-    [self getAVplayerLayerFromView:_playerVC.media view];
+    
+    [self getAVplayerLayerFromView:[_playerVC getPlayerView]];
     
     UIView *view            = [[UIView alloc] init];
-_playerLayer.frame      = [_externalWindow bounds];
-  [_playerLayer setContentsGravity:AVLayerVideoGravityResizeAspectFill];
+    _playerLayer.frame      = [_externalWindow bounds];
+    [_playerLayer setContentsGravity:AVLayerVideoGravityResizeAspectFill];
     [view.layer addSublayer:_playerLayer];
     view.frame  = [_externalWindow bounds];
-    _waterMarkLbl.hidden = YES;
-    UILabel *waterMarkLabel = [[UILabel alloc] initWithFrame:CGRectMake(500, 150, 200, 70)];
+
+    UILabel *waterMarkLabel = [[UILabel alloc] initWithFrame:_waterMarkLbl.frame];
     waterMarkLabel.text = @"Player Watermark";
     [waterMarkLabel sizeToFit];
     waterMarkLabel.textColor = [UIColor whiteColor];
     [view addSubview:waterMarkLabel];
     [view bringSubviewToFront:waterMarkLabel];
-    
-    [_externalWindow addSubview:view];*/
+    [_externalWindow addSubview:view];
     
     [_playerContainerView updateConstraintsIfNeeded];
     [_playerContainerView setNeedsLayout];
@@ -196,7 +215,8 @@ _playerLayer.frame      = [_externalWindow bounds];
 -(void)externalScreenDidDisconnect:(NSNotification*)notification
 {
     NSLog(@"externalScreenDidDisconnect....");
-   // _waterMarkLbl.hidden    = NO;
+    _waterMarkLbl.hidden = NO;
+    [self.view bringSubviewToFront:_waterMarkLbl];
     [_playerContainerView setFrame:[_playerContainerSuperView bounds]];
     [_playerContainerSuperView addSubview:_playerContainerView];
     
@@ -232,7 +252,6 @@ _playerLayer.frame      = [_externalWindow bounds];
             _playerLayer = (AVPlayerLayer *)subview.layer;
             return;
         }
-        // List the subviews of subview
         [self getAVplayerLayerFromView:subview];
     }
 }
@@ -254,6 +273,21 @@ _playerLayer.frame      = [_externalWindow bounds];
     _duration.text              = [_playerVC getTimeCodeFromSeondsWithTime:_playerVC.duration];
     [_controlsView setUserInteractionEnabled:YES];
     [_loadingIndicator stopAnimating];
+    
+    _audioTracks    = [_playerVC getAudioTracks];
+    
+    NSString *fileName = @"test";
+    
+    NSString* path = [[NSBundle mainBundle] pathForResource:fileName
+                                                     ofType:@"m3u8"];
+    
+    //Then loading the content into a NSString is even easier.
+    NSString *m3u8String = [NSString stringWithContentsOfFile:path
+                                           encoding:NSUTF8StringEncoding
+                                              error:NULL];
+    _bitRates = [[Utility getBitratesFromM3u8:m3u8String withURL:nil] mutableCopy];
+
+    
 }
 
 - (void)playerFrameRateChangedWithFrameRate:(float)frameRate {
@@ -320,6 +354,21 @@ _playerLayer.frame      = [_externalWindow bounds];
     [_playerVC playForward];
 }
 
+//****************************************************
+// MARK: - AudioTrackDelegate Method
+//****************************************************
+
+- (void)selectedWithAudioTrack:(AudioTrack *)track {
+    [_playerVC pause];
+    [_playerVC switchToSelectedWithAudioTrack:track];
+}
+
+//****************************************************
+// MARK: - BitrateListDelegate Method
+//****************************************************
 
 
+-(void)selectedWithBitrate:(Bitrate *)bitrate {
+    [_playerVC switchToSelectedWithBitRate:bitrate];
+}
 @end

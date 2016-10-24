@@ -214,7 +214,10 @@
 {
     NSLog(@"externalScreenDidDisconnect....");
     _waterMarkLbl.hidden = NO;
-    [self.view bringSubviewToFront:_waterMarkLbl];
+    //[self.view bringSubviewToFront:_waterMarkLbl];
+   // [[self.playerVC getPlayerView] bringSubviewToFront:_waterMarkLbl];
+   // [self.playerContainerSuperView bringSubviewToFront:_waterMarkLbl];
+   // [self.playerContainerView bringSubviewToFront:_waterMarkLbl];
     [_playerContainerView setFrame:[_playerContainerSuperView bounds]];
     [_playerContainerSuperView addSubview:_playerContainerView];
     
@@ -229,7 +232,7 @@
         [_externalWindow resignKeyWindow];
     }
     _externalWindow = nil;
-    
+    [self.view bringSubviewToFront:_waterMarkLbl];
 }
 
 -(void)exteralScreenModeDidChange:(NSNotification*)notification
@@ -240,10 +243,9 @@
     // Get the subviews of the view
     NSArray *subviews = [view subviews];
     // Return if there are no subviews
-    if ([subviews count] == 0) return; // COUNT CHECK LINE
+    if ([subviews count] == 0) return;
     
     for (UIView *subview in subviews) {
-        //[subview isKindOfClass:[UIView class]] //_AVPlayerLayerView//AVPlayerLayer
         NSLog(@"++++++++view:%@",subview);
         if ([subview.layer isKindOfClass:[AVPlayerLayer class]])
         {
@@ -272,20 +274,17 @@
     [_controlsView setUserInteractionEnabled:YES];
     [_loadingIndicator stopAnimating];
     
-    _audioTracks    = [_playerVC getAudioTracks];
-    
-    NSString *fileName = @"test";
-    
-    NSString* path = [[NSBundle mainBundle] pathForResource:fileName
-                                                     ofType:@"m3u8"];
-    
-    //Then loading the content into a NSString is even easier.
-    NSString *m3u8String = [NSString stringWithContentsOfFile:path
-                                           encoding:NSUTF8StringEncoding
-                                              error:NULL];
-    _bitRates = [[Utility getBitratesFromM3u8:m3u8String withURL:nil] mutableCopy];
+    _audioTracks                = [_playerVC getAudioTracks];
 
-    
+    if (!_bitRates) {
+        NSString *fileName      = @"test";
+        NSString* path          = [[NSBundle mainBundle] pathForResource:fileName ofType:@"m3u8"];
+        //Then loading the content into a NSString is even easier.
+        NSString *m3u8String    = [NSString stringWithContentsOfFile:path
+                                                         encoding:NSUTF8StringEncoding
+                                                            error:NULL];
+        _bitRates               = [[Utility getBitratesFromM3u8:m3u8String withURL:nil] mutableCopy];
+    }
 }
 
 - (void)playerFrameRateChangedWithFrameRate:(float)frameRate {

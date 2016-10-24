@@ -106,8 +106,8 @@ private var playerViewControllerKVOContext  = 0
             return CMTimeGetSeconds(queuePlayer.currentTime())
         }
         set {
-            let newTime = CMTimeMakeWithSeconds(newValue, Int32(frameRate))
-            queuePlayer.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
+            let newTime = CMTimeMakeWithSeconds(newValue, (currentItem?.currentTime().timescale)!)
+            self.queuePlayer.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
             })
         }
     }
@@ -149,7 +149,7 @@ private var playerViewControllerKVOContext  = 0
         let interval        = CMTimeMakeWithSeconds(Float64(frame), Int32(NSEC_PER_SEC))
         timeObserverToken   = queuePlayer.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [unowned self] time in
             let timeElapsed  = Double(CMTimeGetSeconds((self.queuePlayer.currentItem?.currentTime())!))
-             print("timeElapsed:\(timeElapsed)")
+            // print("timeElapsed:\(timeElapsed)")
             self.delegate?.playerTimeUpdate(time:timeElapsed)
         }
     }
@@ -221,7 +221,7 @@ private var playerViewControllerKVOContext  = 0
     }
     
     func removeObservers() {
-        
+        //TODO: Add try catch here
         queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.playbackLikelyToKeepUp), context: &playerViewControllerKVOContext)
         queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.playbackBufferEmpty), context: &playerViewControllerKVOContext)
         queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.loadedTimeRanges), context: &playerViewControllerKVOContext)
@@ -237,7 +237,6 @@ private var playerViewControllerKVOContext  = 0
     func prepareToPlay() {
         frameRate = getAssetFrameRate()
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: currentItem)
-        //addObservers()
         //showWaterMark()
         //setUpWaterMarkLayer()
         setupPlayerPeriodicTimeObserver()
@@ -279,18 +278,17 @@ private var playerViewControllerKVOContext  = 0
             }
         }
         
-        if (frameRate == 0) {
-            
-            if (currentItem?.asset != nil) {
-                if let videoTrack = currentItem?.asset.tracks(withMediaType: AVMediaTypeVideo).last {
-                    frameRate = videoTrack.nominalFrameRate
-                }
+        if (frameRate == 0 && currentItem?.asset != nil) {
+            if let videoTrack = currentItem?.asset.tracks(withMediaType: AVMediaTypeVideo).last {
+                frameRate = videoTrack.nominalFrameRate
             }
         }
         
         if (frameRate == 0) {
             frameRate = 25.0
         }
+        print("frameRate:\(frameRate)")
+
         return frameRate
     }
     
@@ -350,7 +348,6 @@ private var playerViewControllerKVOContext  = 0
                 self.removeObservers()
             }
             self.currentItem = AVPlayerItem(asset: newAsset, automaticallyLoadedAssetKeys:self.assetKeysRequiredToPlay)
-            //print("----------currentItem:\(self.currentItem)")
             if (self.isBitrateSwitching) {
                 self.addObservers()
                 self.currentTime = self.lastPlayBackTime
@@ -379,11 +376,11 @@ private var playerViewControllerKVOContext  = 0
         
        var urlString = urlString
         ///////////Demo Urls//////////////////////////////////////
-       // let urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
-       // let urlString = Bundle.main.path(forResource: "count_audio", ofType: "mp4")!
+       // urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
+       // urlString = Bundle.main.path(forResource: "count_audio", ofType: "mp4")!
 
         //var urlString   = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
-      // let localURL    = true
+      //let localURL    = true
        let localURL    = false
         
         // MARK: - m3u8 urls
@@ -394,7 +391,7 @@ private var playerViewControllerKVOContext  = 0
     // urlString     = "https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_16x9/gear5/prog_index.m3u8"
 
         //  var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
-      //var urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+        //urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
        // urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
         //let urlString = "https://devimages.apple.com.edgekey.net/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8" //(Reverse playback)
         //let urlString = "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8" //(4K)
@@ -546,7 +543,6 @@ private var playerViewControllerKVOContext  = 0
                     }
                     self.isPlayerInitilaized = true
                     self.delegate!.playerReadyToPlay()
-
                     //print("canPlayReverse:\(queuePlayer.currentItem?.canPlayReverse)")
                 }
             }
@@ -678,11 +674,18 @@ private var playerViewControllerKVOContext  = 0
      */
     public func stepFrames(byCount numberOfFrame:Int) {
         isAutoPlay = false
-        self.pause()
+         self.pause()
         currentItem?.cancelPendingSeeks()
         let secondsFromFrame    = Float(numberOfFrame)/frameRate
         self.currentTime        += Double(secondsFromFrame)
-        //currentItem?.step(byCount: numberOfFrame) //Its working for mp4 and local assets
+
+        /*if (numberOfFrame > 0) {
+            print("canStepForward:\(currentItem?.canStepForward)")
+        } else {
+            print("canStepBackward:\(currentItem?.canStepBackward)")
+        }
+        currentItem?.step(byCount: numberOfFrame) //Its working for mp4 and local assets*/
+
     }
     
     

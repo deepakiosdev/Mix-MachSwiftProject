@@ -120,14 +120,12 @@
         audioTrackVC.audioTracks = _audioTracks;
         audioTrackVC.delegate      = self;
     } else if ([segue.identifier isEqualToString:@"BitrateListVC"]) {
-        
+        [_playerVC pause];
         BitrateListVC *bitrateListVC = (BitrateListVC *)
         segue.destinationViewController;
         bitrateListVC.bitRates = _bitRates;
         bitrateListVC.delegate = self;
     }
-
-
 }
 
 
@@ -359,7 +357,6 @@
 //****************************************************
 
 - (void)selectedWithAudioTrack:(AudioTrack *)track {
-    [_playerVC pause];
     [_playerVC switchToSelectedWithAudioTrack:track];
 }
 

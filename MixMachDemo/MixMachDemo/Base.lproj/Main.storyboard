@@ -16,7 +16,7 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d2w-0b-kaz">
@@ -51,7 +51,7 @@
                                         <items>
                                             <barButtonItem style="plain" id="xPl-tA-F1l">
                                                 <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wyh-Yh-CUs">
-                                                    <rect key="frame" x="16" y="11" width="30" height="22"/>
+                                                    <rect key="frame" x="20" y="11" width="30" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" image="PlayButton"/>
                                                     <state key="selected" image="PauseButton"/>
@@ -62,7 +62,7 @@
                                             </barButtonItem>
                                             <barButtonItem title="Item" style="plain" id="MXm-RO-85W">
                                                 <slider key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="BeF-be-MZ1">
-                                                    <rect key="frame" x="56" y="7" width="842" height="31"/>
+                                                    <rect key="frame" x="60" y="6.5" width="842" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                                     <connections>
                                                         <action selector="seekBarValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="1Yy-Bn-n9z"/>
@@ -71,7 +71,7 @@
                                             </barButtonItem>
                                             <barButtonItem style="plain" id="NQ4-Y8-Ph5">
                                                 <button key="customView" hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="oMR-Ds-53c">
-                                                    <rect key="frame" x="908" y="7" width="37" height="30"/>
+                                                    <rect key="frame" x="912" y="7" width="37" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal">
                                                         <color key="titleColor" red="1" green="0.23423837550000001" blue="0.91737058989999998" alpha="1" colorSpace="calibratedRGB"/>
@@ -80,7 +80,7 @@
                                             </barButtonItem>
                                             <barButtonItem style="plain" id="m3U-1N-0Hm">
                                                 <button key="customView" hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ETx-EO-spu">
-                                                    <rect key="frame" x="955" y="7" width="46" height="30"/>
+                                                    <rect key="frame" x="959" y="7" width="46" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <state key="selected" title="Pause"/>
@@ -258,10 +258,10 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="Cell" id="0jt-TO-aGL" customClass="AudioTrackCell" customModule="MixMachDemo" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="1" width="1024" height="44"/>
+                                        <rect key="frame" x="0.0" y="1" width="1000" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0jt-TO-aGL" id="MfW-7w-mYb">
-                                            <frame key="frameInset" width="824" height="43"/>
+                                            <frame key="frameInset" width="812" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aiN-v3-ceT">
@@ -324,7 +324,7 @@
                                         <rect key="frame" x="0.0" y="1" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Zwd-pW-XGf" id="tYb-Te-TUP">
-                                            <frame key="frameInset" width="336" height="43"/>
+                                            <frame key="frameInset" width="336" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZBO-0y-y5d">

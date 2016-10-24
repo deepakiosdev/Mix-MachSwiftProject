@@ -73,10 +73,7 @@ private var playerViewControllerKVOContext  = 0
                 if (queuePlayer.canInsert(self.currentItem!, after: nil)) {
                     queuePlayer.insert(self.currentItem!, after: nil)
                 }
-                if (!isBitrateSwitching) {
-                    prepareToPlay()
-                }
-                
+                prepareToPlay()
             }
         }
     }
@@ -109,10 +106,8 @@ private var playerViewControllerKVOContext  = 0
             return CMTimeGetSeconds(queuePlayer.currentTime())
         }
         set {
-            //print("newValue:\(newValue)")
             let newTime = CMTimeMakeWithSeconds(newValue, Int32(frameRate))
             queuePlayer.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: { (Bool) in
-                //print("1---newValue:\(newValue)")
             })
         }
     }
@@ -130,7 +125,6 @@ private var playerViewControllerKVOContext  = 0
     //****************************************************
     
     override init() {
-        
     }
     
     deinit {
@@ -154,7 +148,7 @@ private var playerViewControllerKVOContext  = 0
         // Make sure we don't have a strong reference cycle by only capturing self as weak.
         let interval        = CMTimeMakeWithSeconds(Float64(frame), Int32(NSEC_PER_SEC))
         timeObserverToken   = queuePlayer.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [unowned self] time in
-            let timeElapsed  = Double(CMTimeGetSeconds((self.currentItem?.currentTime())!))
+            let timeElapsed  = Double(CMTimeGetSeconds((self.queuePlayer.currentItem?.currentTime())!))
              print("timeElapsed:\(timeElapsed)")
             self.delegate?.playerTimeUpdate(time:timeElapsed)
         }
@@ -192,59 +186,50 @@ private var playerViewControllerKVOContext  = 0
     
     func addObservers() {
         // Register as an observer of the player item's status property
-
-        queuePlayer.addObserver(self,
-                    forKeyPath: #keyPath(currentItem.playbackLikelyToKeepUp),
-                    options: [.old, .new],
-                    context: &playerViewControllerKVOContext)
-        queuePlayer.addObserver(self,
-                    forKeyPath: #keyPath(currentItem.playbackBufferEmpty),
-                    options: [.old, .new],
-                    context: &playerViewControllerKVOContext)
-        queuePlayer.addObserver(self,
-                    forKeyPath: #keyPath(currentItem.loadedTimeRanges),
-                    options: [.old, .new],
-                    context: &playerViewControllerKVOContext)
-
-        if(!isBitrateSwitching) {
-            
-            queuePlayer.addObserver(self,
-                                    forKeyPath: #keyPath(currentItem.status),
-                                    options: [.old, .new],
-                                    context: &playerViewControllerKVOContext)
-            queuePlayer.addObserver(self,
-                                    forKeyPath: #keyPath(currentItem.duration),
-                                    options: [.old, .new],
-                                    context: &playerViewControllerKVOContext)
-            queuePlayer.addObserver(self,
-                                    forKeyPath: #keyPath(rate),
-                                    options: [.old, .new],
-                                    context: &playerViewControllerKVOContext)
-        }
-
         
+        queuePlayer.addObserver(self,
+                                forKeyPath: #keyPath(currentItem.playbackLikelyToKeepUp),
+                                options: [.old, .new],
+                                context: &playerViewControllerKVOContext)
+        queuePlayer.addObserver(self,
+                                forKeyPath: #keyPath(currentItem.playbackBufferEmpty),
+                                options: [.old, .new],
+                                context: &playerViewControllerKVOContext)
+        queuePlayer.addObserver(self,
+                                forKeyPath: #keyPath(currentItem.loadedTimeRanges),
+                                options: [.old, .new],
+                                context: &playerViewControllerKVOContext)
+        
+        queuePlayer.addObserver(self,
+                                forKeyPath: #keyPath(currentItem.status),
+                                options: [.old, .new],
+                                context: &playerViewControllerKVOContext)
+        queuePlayer.addObserver(self,
+                                forKeyPath: #keyPath(currentItem.duration),
+                                options: [.old, .new],
+                                context: &playerViewControllerKVOContext)
+        
+        queuePlayer.addObserver(self,
+                                forKeyPath: #keyPath(rate),
+                                options: [.old, .new],
+                                context: &playerViewControllerKVOContext)
         /*queuePlayer.addObserver(self,
-                    forKeyPath: #keyPath(currentItem),
-                    options: [.old, .new],
-                    context: &playerViewControllerKVOContext)*/
-        
-        //
+         forKeyPath: #keyPath(currentItem),
+         options: [.old, .new],
+         context: &playerViewControllerKVOContext)*/
         
     }
     
     func removeObservers() {
-
+        
         queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.playbackLikelyToKeepUp), context: &playerViewControllerKVOContext)
         queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.playbackBufferEmpty), context: &playerViewControllerKVOContext)
         queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.loadedTimeRanges), context: &playerViewControllerKVOContext)
-     
-        if(!isBitrateSwitching) {
-            queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.duration), context: &playerViewControllerKVOContext)
-            queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.status), context: &playerViewControllerKVOContext)
-            queuePlayer.removeObserver(self, forKeyPath: #keyPath(rate), context: &playerViewControllerKVOContext)
-        }
-       // queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem), context: &playerViewControllerKVOContext)
-     
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.duration), context: &playerViewControllerKVOContext)
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem.status), context: &playerViewControllerKVOContext)
+        queuePlayer.removeObserver(self, forKeyPath: #keyPath(rate), context: &playerViewControllerKVOContext)
+        // queuePlayer.removeObserver(self, forKeyPath: #keyPath(currentItem), context: &playerViewControllerKVOContext)
+        
         cleanUpPlayerPeriodicTimeObserver()
         
     }
@@ -252,7 +237,6 @@ private var playerViewControllerKVOContext  = 0
     func prepareToPlay() {
         frameRate = getAssetFrameRate()
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: currentItem)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name:NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         //addObservers()
         //showWaterMark()
         //setUpWaterMarkLayer()
@@ -323,58 +307,58 @@ private var playerViewControllerKVOContext  = 0
              we'll elect to use the main thread at all times, let's dispatch
              our handler to the main queue.
              */
-           // DispatchQueue.main.async {
-                /*
-                 `self.asset` has already changed! No point continuing because
-                 another `newAsset` will come along in a moment.
-                 */
-                // guard newAsset == self.urlAsset else { return }
+            // DispatchQueue.main.async {
+            /*
+             `self.asset` has already changed! No point continuing because
+             another `newAsset` will come along in a moment.
+             */
+            // guard newAsset == self.urlAsset else { return }
+            
+            /*
+             Test whether the values of each of the keys we need have been
+             successfully loaded.
+             */
+            for key in self.assetKeysRequiredToPlay {
+                var error: NSError?
                 
-                /*
-                 Test whether the values of each of the keys we need have been
-                 successfully loaded.
-                 */
-                for key in self.assetKeysRequiredToPlay {
-                    var error: NSError?
+                if newAsset.statusOfValue(forKey: key, error: &error) == .failed {
+                    let stringFormat = NSLocalizedString("error.asset_key_%@_failed.description", comment: "Can't use this AVAsset because one of it's keys failed to load")
                     
-                    if newAsset.statusOfValue(forKey: key, error: &error) == .failed {
-                        let stringFormat = NSLocalizedString("error.asset_key_%@_failed.description", comment: "Can't use this AVAsset because one of it's keys failed to load")
-                        
-                        let message = String.localizedStringWithFormat(stringFormat, key)
-                        
-                        self.handleErrorWithMessage(message, error: error)
-                        
-                        return
-                    }
-                }
-                
-                // We can't play this asset.
-                if !newAsset.isPlayable || newAsset.hasProtectedContent {
-                    let message = NSLocalizedString("error.asset_not_playable.description", comment: "Can't use this AVAsset because it isn't playable or has protected content")
+                    let message = String.localizedStringWithFormat(stringFormat, key)
                     
-                    self.handleErrorWithMessage(message)
+                    self.handleErrorWithMessage(message, error: error)
                     
                     return
                 }
+            }
+            
+            // We can't play this asset.
+            if !newAsset.isPlayable || newAsset.hasProtectedContent {
+                let message = NSLocalizedString("error.asset_not_playable.description", comment: "Can't use this AVAsset because it isn't playable or has protected content")
                 
-                /*
-                 We can play this asset. Create a new `AVPlayerItem` and make
-                 it our player's current item.
-                 */
-                self.urlAsset = newAsset
-
-                //self.removeObservers()
-                self.currentItem = AVPlayerItem(asset: newAsset, automaticallyLoadedAssetKeys:self.assetKeysRequiredToPlay)
-                 print("----------currentItem:\(self.currentItem)")
-                if (self.isBitrateSwitching) {
-                    self.addObservers()
-                    self.isBitrateSwitching = false
-                    self.currentTime        = self.lastPlayBackTime
-                    
-                } else {
-                    self.currentItem?.seek(to: kCMTimeZero)
-                }
-           // }
+                self.handleErrorWithMessage(message)
+                
+                return
+            }
+            
+            /*
+             We can play this asset. Create a new `AVPlayerItem` and make
+             it our player's current item.
+             */
+            self.urlAsset = newAsset
+            if (self.isBitrateSwitching) {
+                self.removeObservers()
+            }
+            self.currentItem = AVPlayerItem(asset: newAsset, automaticallyLoadedAssetKeys:self.assetKeysRequiredToPlay)
+            //print("----------currentItem:\(self.currentItem)")
+            if (self.isBitrateSwitching) {
+                self.addObservers()
+                self.currentTime = self.lastPlayBackTime
+                
+            } else {
+                self.currentItem?.seek(to: kCMTimeZero)
+            }
+            // }
         }
     }
     
@@ -393,20 +377,22 @@ private var playerViewControllerKVOContext  = 0
     
     public func initPlayer(urlString: String) {
         
-       // var urlString = urlString
+       var urlString = urlString
         ///////////Demo Urls//////////////////////////////////////
-        let urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
+       // let urlString = Bundle.main.path(forResource: "trailer_720p", ofType: "mov")!
        // let urlString = Bundle.main.path(forResource: "count_audio", ofType: "mp4")!
 
         //var urlString   = Bundle.main.path(forResource: "ElephantSeals", ofType: "mov")!
-       let localURL    = true
-     //let localURL    = false
+      // let localURL    = true
+       let localURL    = false
         
         // MARK: - m3u8 urls
         // let urlString = Bundle.main.path(forResource: "bipbopall", ofType: "m3u8")!
         
     //urlString     = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
-    //urlString     = "https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8"
+     urlString     = "https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8" //Multiple bitrate
+    // urlString     = "https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_16x9/gear5/prog_index.m3u8"
+
         //  var urlString     = "https://dl.dropboxusercontent.com/u/7303267/website/m3u8/index.m3u8";
       //var urlString     = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
        // urlString = "http://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8" //(AES encrypted)
@@ -443,7 +429,8 @@ private var playerViewControllerKVOContext  = 0
         mediaPlayer.player = queuePlayer
         //configureAirplay()
         addObservers()
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name:NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+
         let urlAsset    = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
         urlAsset.resourceLoader.setDelegate(self, queue:DispatchQueue.main)
         //let playerItem = AVPlayerItem(asset: urlAsset)
@@ -522,7 +509,7 @@ private var playerViewControllerKVOContext  = 0
             else {
                 newStatus = .unknown
             }
-            print("++++++++++++currentItem:\(currentItem),newStatus:\(newStatus)")
+           // print("++++++++++++currentItem:\(currentItem),newStatus:\(newStatus)")
 
             if newStatus == .failed {
                 self.handleErrorWithMessage(queuePlayer.currentItem?.error?.localizedDescription)
@@ -553,18 +540,14 @@ private var playerViewControllerKVOContext  = 0
                     /*
                      The player item is ready to play,
                      */
-                    
                     if (self.isBitrateSwitching) {
-                        self.removeObservers()
                         self.isBitrateSwitching = false
-                        self.currentTime        = self.lastPlayBackTime
-                        self.addObservers()
-                        
+                        self.play()
                     }
-                    
                     self.isPlayerInitilaized = true
                     self.delegate!.playerReadyToPlay()
-                    print("canPlayReverse:\(queuePlayer.currentItem?.canPlayReverse)")
+
+                    //print("canPlayReverse:\(queuePlayer.currentItem?.canPlayReverse)")
                 }
             }
         } else if keyPath == #keyPath(currentItem.duration) {
@@ -754,7 +737,7 @@ private var playerViewControllerKVOContext  = 0
         
         if let options = urlAsset?.tracks(withMediaType: AVMediaTypeAudio) {
           
-            for index in 1..<options.count {
+            for index in 0..<options.count {
                 let option = options [index]
                 var displayName = Utility.getLanguageName(fromLanguageCode: option.languageCode)
                 
@@ -780,6 +763,7 @@ private var playerViewControllerKVOContext  = 0
     
     func switchToSelected(audioTrack track: AudioTrack) {
         
+        self.pause()
         let audioTracks: AVMediaSelectionGroup? = urlAsset?.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible)
         
         if let audios = audioTracks?.options {
@@ -843,12 +827,12 @@ private var playerViewControllerKVOContext  = 0
     }
     
     func switchToSelected(bitRate: Bitrate) {
-        pause()
         isBitrateSwitching = true
-        removeObservers()
+        cleanUpPlayerPeriodicTimeObserver()
+        pause()
         lastPlayBackTime = currentTime
-        //currentItem = nil
         let url     = URL.init(string: bitRate.url)!
+        print("Selected bitrate url:\(url)")
         let headers : [String: String] = ["User-Agent": "iPad"]
         let urlAsset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey":headers])
         urlAsset.resourceLoader.setDelegate(self, queue:DispatchQueue.main)

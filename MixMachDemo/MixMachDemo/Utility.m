@@ -53,6 +53,7 @@
 
 +(NSArray*)getBitratesFromM3u8:(NSString*)m3u8String withURL:(NSString*)urlString
 {
+    urlString = @"https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_16x9/";
     NSLog(@"Master m3u8 url:%@", urlString);
     if ([m3u8String isEqualToString:@""] || !m3u8String) {
         return nil;
@@ -68,7 +69,7 @@
         int index = 1;
         for (NSString *streamString in m3u8Playlist)
         {
-            if([streamString rangeOfString:@"BANDWIDTH="].location != NSNotFound)
+            if([streamString rangeOfString:@"BANDWIDTH="].location != NSNotFound && [streamString rangeOfString:@"EXT-X-I-FRAME-STREAM-INF"].location == NSNotFound)
             {
                 [bandwidthStrings addObject:streamString];
                 
@@ -84,16 +85,21 @@
                 NSString *playlistURL   = m3u8Playlist[index];
                 if (playlistURL)
                 {
-                    Bitrate *bitrate   = [[Bitrate alloc] init];
-                    bitrate.bitrate      =  value.doubleValue;
-                    bitrate.birtateTitle = [Utility getBitrateName:[value doubleValue]];
+                    Bitrate *bitrate        = [[Bitrate alloc] init];
+                    bitrate.bitrate         = value.doubleValue;
+                    bitrate.birtateTitle    = [Utility getBitrateName:[value doubleValue]];
                     NSLog(@"bit rate %f", bitrate.bitrate);
-                    
+
                     bitrate.URL          = [playlistURL stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
                     
+                    NSLog(@"Bitrate url:%@",bitrate.URL);
+                    if (![bitrate.URL hasSuffix:@".m3u8"])
+                        continue;
                     if(![bitrate.URL hasPrefix:@"http"]) {
-                        bitrate.URL = [[[[[NSURL URLWithString:urlString] URLByDeletingLastPathComponent] URLByAppendingPathComponent:bitrate.URL]  absoluteString]stringByRemovingPercentEncoding];
+                        bitrate.URL = [[[[NSURL URLWithString:urlString] URLByAppendingPathComponent:bitrate.URL]  absoluteString]stringByRemovingPercentEncoding];
                     }
+
+                        
                     NSLog(@"Bitrate:%f, and corresponding m3u8 url:%@",value.doubleValue,bitrate.URL);
                     [bandwidths addObject:bitrate];
                 }

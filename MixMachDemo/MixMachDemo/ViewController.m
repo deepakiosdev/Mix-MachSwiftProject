@@ -136,6 +136,11 @@
 }
 
 
+//****************************************************
+// MARK: - Private Methods
+//****************************************************
+
+
 #pragma mark - EXternal Display Methods
 - (void)setupExternalScreen
 {
@@ -214,10 +219,7 @@
 {
     NSLog(@"externalScreenDidDisconnect....");
     _waterMarkLbl.hidden = NO;
-    //[self.view bringSubviewToFront:_waterMarkLbl];
-   // [[self.playerVC getPlayerView] bringSubviewToFront:_waterMarkLbl];
-   // [self.playerContainerSuperView bringSubviewToFront:_waterMarkLbl];
-   // [self.playerContainerView bringSubviewToFront:_waterMarkLbl];
+    //[self showWaterMark];
     [_playerContainerView setFrame:[_playerContainerSuperView bounds]];
     [_playerContainerSuperView addSubview:_playerContainerView];
     

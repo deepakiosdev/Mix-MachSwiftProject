@@ -38,11 +38,14 @@ class BitrateListVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! AudioTrackCell
         cell.trackName.text = (bitRates[indexPath.row] as Bitrate).birtateTitle
+        cell.accessoryType  = .none
         return cell
-        
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // let lastSelectedCell = tableView.cellForRow(at: tableView.indexPathForSelectedRow)
+        let selectedCell            = tableView.cellForRow(at: indexPath)
+        selectedCell?.accessoryType = .checkmark
         delegate?.selected(bitrate: bitRates[indexPath.row])
         self.dismiss(animated: true, completion: nil)
     }

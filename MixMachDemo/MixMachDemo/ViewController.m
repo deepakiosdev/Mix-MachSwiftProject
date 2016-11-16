@@ -12,7 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "Utility.h"
-
+#import "VideoThumbCollectionViewCell.h"
 
 
 @class PlayerViewController;
@@ -31,6 +31,7 @@
 @property (weak, nonatomic) IBOutlet UIView *controlsView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
 @property (weak, nonatomic) IBOutlet UILabel *waterMarkLbl;
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, strong) UIWindow      *externalWindow;
 @property (nonatomic, strong) UIScreen      *externalScreen;
 @property (nonatomic, strong) AVPlayerLayer *playerLayer;
@@ -315,6 +316,9 @@
     //[_playerVC play];
 }
 
+- (void)allAssetsLoaded {
+    [self.collectionView reloadData];
+}
 //****************************************************
 // MARK: - Action Methods
 //****************************************************
@@ -368,5 +372,34 @@
 
 -(void)selectedWithBitrate:(Bitrate *)bitrate {
     [_playerVC switchToSelectedWithBitRate:bitrate];
+}
+
+//****************************************************
+// MARK: - UICollectionViewDelegate Method
+//****************************************************
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return _playerVC.loadedAssets.count;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    VideoThumbCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoThumbCollectionViewCell" forIndexPath:indexPath];
+    if (_playerVC.currentItemIndex == indexPath.item) {
+        cell.titleLabel.backgroundColor = [UIColor blueColor];
+    } else {
+        cell.titleLabel.backgroundColor = [UIColor lightGrayColor];
+    }
+    [cell.titleLabel setText:[NSString stringWithFormat:@"Asset %ld", (long)indexPath.item]];
+    return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    [_playerVC replaceCurrentItemWithSelectedItemWithItemAtIndex:indexPath.item];
+    [self.collectionView reloadData];
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
+    return CGSizeMake(100, 50);
 }
 @end

@@ -69,6 +69,7 @@
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    [self.view bringSubviewToFront:_waterMarkLbl];
 
     if (_playerVC.isPlayerInitilaized) {
         [self setupExternalScreen];
